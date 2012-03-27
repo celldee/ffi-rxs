@@ -3,9 +3,9 @@ ffi-rxs
 
 == DESCRIPTION:
 
-This gem wraps the Crossroads I/O networking library using the ruby FFI (foreign
-function interface). It's a pure ruby wrapper so this gem can be loaded
-and run by any ruby runtime that supports FFI. That's all of them:
+This gem wraps the Crossroads I/O networking library using the Ruby FFI (foreign
+function interface). It's a pure Ruby wrapper so this gem can be loaded
+and run by any Ruby runtime that supports FFI. That's all of them:
 MRI 1.9.x, Rubinius and JRuby.
 
 Crossroads I/O is a fork of ZeroMQ. This gem is a re-working of the ffi-rzmq gem
@@ -41,7 +41,7 @@ you will be sad.
 
 == INSTALL:
 
-A full gem has been released to rubygems.org as of release 0.1.0.
+A full gem has been released to Rubygems.org as of release 0.1.0.
 Make sure the Crossroads I/O library is already installed on your system.
 
  % gem install ffi-rxs # should grab the latest release
