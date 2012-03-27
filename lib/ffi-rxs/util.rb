@@ -23,14 +23,14 @@ module XS
     end
 
     # Returns a string corresponding to the currently set #errno. These
-    # error strings are defined by libzmq.
+    # error strings are defined by libxs.
     #
     def self.error_string
       LibXS.xs_strerror(errno).read_string
     end
 
     # Returns an array of the form [major, minor, patch] to represent the
-    # version of libzmq.
+    # version of libxs.
     #
     # Class method! Invoke as:  XS::Util.version
     #
@@ -68,7 +68,7 @@ module XS
 
     # :doc:
     # Called by most library methods to verify there were no errors during
-    # operation. If any are found, raise the appropriate #ZeroMQError.
+    # operation. If any are found, raise the appropriate #XSError.
     #
     # When no error is found, this method returns +true+ which is behavior
     # used internally by #send and #recv.

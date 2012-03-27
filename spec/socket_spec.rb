@@ -74,52 +74,50 @@ module XS
     end # context calling close
 
 
+    context "identity=" do
+      before(:all) { @ctx = Context.new }
+      after(:all) { @ctx.terminate }
 
-      context "identity=" do
-        before(:all) { @ctx = Context.new }
-        after(:all) { @ctx.terminate }
+      it "fails to set identity for identities in excess of 255 bytes" do
+        sock = Socket.new @ctx.pointer, XS::REQ
 
-        it "fails to set identity for identities in excess of 255 bytes" do
-          sock = Socket.new @ctx.pointer, XS::REQ
+        sock.identity = ('a' * 256)
+        sock.identity.should == ''
+        sock.close
+      end
 
-          sock.identity = ('a' * 256)
-          sock.identity.should == ''
-          sock.close
-        end
+      it "fails to set identity for identities of length 0" do
+        sock = Socket.new @ctx.pointer, XS::REQ
 
-        it "fails to set identity for identities of length 0" do
-          sock = Socket.new @ctx.pointer, XS::REQ
+        sock.identity = ''
+        sock.identity.should == ''
+        sock.close
+      end
 
-          sock.identity = ''
-          sock.identity.should == ''
-          sock.close
-        end
+      it "sets the identity for identities of 1 byte" do
+        sock = Socket.new @ctx.pointer, XS::REQ
 
-        it "sets the identity for identities of 1 byte" do
-          sock = Socket.new @ctx.pointer, XS::REQ
+        sock.identity = 'a'
+        sock.identity.should == 'a'
+        sock.close
+      end
 
-          sock.identity = 'a'
-          sock.identity.should == 'a'
-          sock.close
-        end
+      it "set the identity identities of 255 bytes" do
+        sock = Socket.new @ctx.pointer, XS::REQ
 
-        it "set the identity identities of 255 bytes" do
-          sock = Socket.new @ctx.pointer, XS::REQ
+        sock.identity = ('a' * 255)
+        sock.identity.should == ('a' * 255)
+        sock.close
+      end
 
-          sock.identity = ('a' * 255)
-          sock.identity.should == ('a' * 255)
-          sock.close
-        end
+      it "should convert numeric identities to strings" do
+        sock = Socket.new @ctx.pointer, XS::REQ
 
-        it "should convert numeric identities to strings" do
-          sock = Socket.new @ctx.pointer, XS::REQ
-
-          sock.identity = 7
-          sock.identity.should == '7'
-          sock.close
-        end
-      end # context identity=
-
+        sock.identity = 7
+        sock.identity.should == '7'
+        sock.close
+      end
+    end # context identity=
 
 
     socket_types.each do |socket_type|
@@ -283,7 +281,8 @@ module XS
             array[0].should == value
           end
 
-          if (defined?(XS::XSUB) && XS::XSUB == socket_type)
+          if (defined?(XS::XSUB) && XS::XSUB == socket_type) or
+             (defined?(XS::SUB) && XS::SUB == socket_type)
             it "should default to a value of 0" do
               value = 0
               array = []
@@ -459,26 +458,7 @@ module XS
           events[0].should_not == XS::POLLOUT
         end
       end # shared example for pubsub
-
-      context "when SUB binds and PUB connects" do
-
-        before(:each) do
-          @ctx = Context.new
-
-          @sub = @ctx.socket XS::SUB
-          rc = @sub.setsockopt XS::SUBSCRIBE, ''
-
-          @pub = @ctx.socket XS::PUB
-          port = bind_to_random_tcp_port(@sub)
-          rc = @pub.connect "tcp://127.0.0.1:#{port}"
-          sleep 0.5
-
-          rc = @pub.send_string('test')
-          sleep 0.2
-        end
-
-        it_behaves_like "pubsub sockets where"
-      end # context SUB binds PUB connects
+      
 
       context "when SUB connects and PUB binds" do
 

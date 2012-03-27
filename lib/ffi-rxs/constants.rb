@@ -1,6 +1,9 @@
 module XS
-  # Set up all of the constants that are *common* to all API
-  # versions
+  # Set up all of the constants
+  
+  # Context options
+  MAX_SOCKETS = 1
+  IO_THREADS = 2
   
   #  Socket types
   PAIR = 0
@@ -12,6 +15,10 @@ module XS
   XREP = 6
   PULL = 7
   PUSH = 8
+  XPUB = 9
+  XSUB = 10
+  DEALER = XREQ
+  ROUTER = XREP
 
   SocketTypeNameMap = {
     PAIR => "PAIR",
@@ -22,11 +29,16 @@ module XS
     PULL => "PULL",
     PUSH => "PUSH",
     XREQ => "XREQ",
-    XREP => "XREP"
+    XREP => "XREP",
+    ROUTER => "ROUTER",
+    DEALER => "DEALER",
+    XPUB => "XPUB",
+    XSUB => "XSUB"
   }
 
   #  Socket options
   AFFINITY = 4
+  IDENTITY = 5
   SUBSCRIBE = 6
   UNSUBSCRIBE = 7
   RATE = 8
@@ -41,9 +53,18 @@ module XS
   RECONNECT_IVL = 18
   BACKLOG = 19
   RECONNECT_IVL_MAX = 21
+  MAXMSGSIZE = 22
+  SNDHWM = 23
+  RCVHWM = 24
+  MULTICAST_HOPS = 25
+  RCVTIMEO = 27
+  SNDTIMEO = 28
 
   #  Send/recv options
+  DONTWAIT = 1
   SNDMORE = 2
+  SNDLABEL = 4
+  NonBlocking = DONTWAIT
 
   #  I/O multiplexing
 
@@ -54,11 +75,12 @@ module XS
 
   #  Socket errors
   EAGAIN = Errno::EAGAIN::Errno
+  EFAULT = Errno::EFAULT::Errno
   EINVAL = Errno::EINVAL::Errno
+  EMFILE = Errno::EMFILE::Errno
   ENOMEM = Errno::ENOMEM::Errno
   ENODEV = Errno::ENODEV::Errno
-  EFAULT = Errno::EFAULT::Errno
-
+  
   # XS errors
   HAUSNUMERO     = 156384712
   EMTHREAD       = (HAUSNUMERO + 50)
@@ -80,33 +102,3 @@ module XS
   ENOTSOCK        = Errno::ENOTSOCK::Errno rescue (HAUSNUMERO + 9)
   EINTR           = Errno::EINTR::Errno rescue (HAUSNUMERO + 10)
 end # module XS
-
-module XS
-  # Socket types
-  XPUB = 9
-  XSUB = 10
-  DEALER = XREQ
-  ROUTER = XREP
-
-  SocketTypeNameMap[ROUTER] = 'ROUTER'
-  SocketTypeNameMap[DEALER] = 'DEALER'
-  SocketTypeNameMap[XPUB] = 'XPUB'
-  SocketTypeNameMap[XSUB] = 'XSUB'
-
-  # Socket options
-  IDENTITY = 5
-  MAXMSGSIZE = 22
-  SNDHWM = 23
-  RCVHWM = 24
-  MULTICAST_HOPS = 25
-  RCVTIMEO = 27
-  SNDTIMEO = 28
-
-  # Send/recv options
-  DONTWAIT = 1
-  SNDLABEL = 4
-  NonBlocking = DONTWAIT
-
-  # Socket & other errors
-  EMFILE = Errno::EMFILE::Errno
-end

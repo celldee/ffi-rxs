@@ -14,7 +14,7 @@ function interface). It's a pure ruby wrapper so this gem can be loaded
 and run by any ruby runtime that supports FFI. That's all of them:
 MRI 1.9.x, Rubinius and JRuby.}
 
-  s.rubyforge_project = "ffi-rxs"
+  # s.rubyforge_project = "ffi-rxs"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

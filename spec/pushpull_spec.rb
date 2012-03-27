@@ -64,7 +64,7 @@ module XS
             rc.should == 0
             buffer = ''
             rc = pull.recv_string buffer
-            rc.should == 0
+            rc.should == 11
             mutex.synchronize { received << buffer }
             pull.close
           end
@@ -94,7 +94,7 @@ module XS
             buffer = ''
             rc = 0
             mutex.synchronize { rc = pull.recv_string buffer }
-            rc.should == 0
+            rc.should == 11
             mutex.synchronize { received << buffer }
           end
           sleep 0.01 # give each thread time to spin up

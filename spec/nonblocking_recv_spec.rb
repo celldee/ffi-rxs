@@ -92,28 +92,6 @@ module XS
 
     context "PUB" do
 
-      describe "non-blocking #recvmsgs where sender connects & receiver binds" do
-        include APIHelper
-
-        before(:each) do
-          @receiver = @ctx.socket XS::SUB
-          port = bind_to_random_tcp_port(@receiver)
-          assert_ok(@receiver.setsockopt(XS::SUBSCRIBE, ''))
-          @sender = @ctx.socket XS::PUB
-          assert_ok(@sender.connect("tcp://127.0.0.1:#{port}"))
-          sleep 0.3
-        end
-
-        after(:each) do
-          @receiver.close
-          @sender.close
-        end
-
-        it_behaves_like "any socket"
-        it_behaves_like "sockets without exposed envelopes"
-
-      end # describe 'non-blocking recvmsgs'
-
       describe "non-blocking #recvmsgs where sender binds & receiver connects" do
         include APIHelper
 

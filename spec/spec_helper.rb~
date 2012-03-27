@@ -3,29 +3,18 @@
 # to run all specs.
 
 require File.expand_path(
-File.join(File.dirname(__FILE__), %w[.. lib ffi-rzmq]))
+File.join(File.dirname(__FILE__), %w[.. lib ffi-rxs]))
 
 Thread.abort_on_exception = true
 
-# define some version guards so we can turn on/off specs based upon
-# the version of the 0mq library that is loaded
-def version2?
-  ZMQ::LibZMQ.version2?
-end
-
-def version3?
-  ZMQ::LibZMQ.version3?
-end
-
-
 module APIHelper
-  def stub_libzmq
+  def stub_libxs
     @err_str_mock = mock("error string")
 
-    LibZMQ.stub!(
-    :zmq_init => 0,
-    :zmq_errno => 0,
-    :zmq_sterror => @err_str_mock
+    LibXS.stub!(
+    :xs_init => 0,
+    :xs_errno => 0,
+    :xs_sterror => @err_str_mock
     )
   end
 
@@ -38,7 +27,7 @@ module APIHelper
     tries = 0
     rc = -1
 
-    while !ZMQ::Util.resultcode_ok?(rc) && tries < max_tries
+    while !XS::Util.resultcode_ok?(rc) && tries < max_tries
       tries += 1
       random = random_port
       rc = socket.bind(local_transport_string(random))
@@ -51,7 +40,7 @@ module APIHelper
     tries = 0
     rc = -1
 
-    while !ZMQ::Util.resultcode_ok?(rc) && tries < max_tries
+    while !XS::Util.resultcode_ok?(rc) && tries < max_tries
       tries += 1
       random = random_port
       rc = socket.connect(local_transport_string(random))
@@ -65,6 +54,6 @@ module APIHelper
   end
 
   def assert_ok(rc)
-    raise "Failed with rc [#{rc}] and errno [#{ZMQ::Util.errno}], msg [#{ZMQ::Util.error_string}]! #{caller(0)}" unless rc >= 0
+    raise "Failed with rc [#{rc}] and errno [#{XS::Util.errno}], msg [#{XS::Util.error_string}]! #{caller(0)}" unless rc >= 0
   end
 end

@@ -45,19 +45,49 @@ module XS
 
     attr_reader :context, :pointer
 
-    def self.create io_threads = 1
-      new(io_threads) rescue nil
+    def self.create
+      new() rescue nil
     end
     
     # Use the factory method Context#create to make contexts.
     #
-    def initialize io_threads = 1
+    def initialize
       @sockets = []
-      @context = LibXS.xs_init io_threads
+      @context = LibXS.xs_init()
       @pointer = @context
-      error_check 'zmq_init', (@context.nil? || @context.null?) ? -1 : 0
+      error_check 'xs_init', (@context.nil? || @context.null?) ? -1 : 0
 
       define_finalizer
+    end
+    
+    # Set options on this context.
+    #
+    # Context options take effect only if set with setctxopt() prior to
+    # creating the first socket in a given context with socket().
+    #
+    # Valid +name+ values that take a numeric +value+ are:
+    #  XS::IO_THREADS
+    #  XS::MAX_SOCKETS
+    #
+    # Returns 0 when the operation completed successfully.
+    # Returns -1 when this operation failed.
+    #
+    # With a -1 return code, the user must check XS.errno to determine the
+    # cause.
+    #
+    #  rc = context.setctxopt(XS::IO_THREADS, 10)
+    #  XS::Util.resultcode_ok?(rc) ? puts("succeeded") : puts("failed")
+    #
+    def setctxopt name, value, length = nil
+      #if (name == XS::IO_THREADS) || (name == XS::MAX_SOCKETS)
+        length = 4
+        pointer = LibC.malloc length
+        pointer.write_int value
+      #end
+
+      rc = LibXS.xs_setctxopt @context, name, pointer, length
+      LibC.free(pointer) unless pointer.nil? || pointer.null?
+      rc
     end
 
     # Call to release the context and any remaining data associated
@@ -70,7 +100,7 @@ module XS
     def terminate
       unless @context.nil? || @context.null?
         remove_finalizer
-        rc = LibZMQ.zmq_term @context
+        rc = LibXS.xs_term @context
         @context = nil
         @sockets = nil
         rc
@@ -82,17 +112,17 @@ module XS
     # Short-cut to allocate a socket for a specific context.
     #
     # Takes several +type+ values:
-    #   #ZMQ::REQ
-    #   #ZMQ::REP
-    #   #ZMQ::PUB
-    #   #ZMQ::SUB
-    #   #ZMQ::PAIR
-    #   #ZMQ::PULL
-    #   #ZMQ::PUSH
-    #   #ZMQ::DEALER
-    #   #ZMQ::ROUTER
+    #   #XS::REQ
+    #   #XS::REP
+    #   #XS::PUB
+    #   #XS::SUB
+    #   #XS::PAIR
+    #   #XS::PULL
+    #   #XS::PUSH
+    #   #XS::DEALER
+    #   #XS::ROUTER
     #
-    # Returns a #ZMQ::Socket when the allocation succeeds, nil
+    # Returns a #XS::Socket when the allocation succeeds, nil
     # if it fails.
     #
     def socket type
@@ -118,8 +148,8 @@ module XS
     end
 
     def self.close context
-      Proc.new { LibZMQ.zmq_term context unless context.null? }
+      Proc.new { LibXS.xs_term context unless context.null? }
     end
   end
 
-end # module ZMQ
+end # module XS

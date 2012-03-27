@@ -37,15 +37,17 @@ module XS
     # otherwise the runtime hangs (and requires a kill -9 to terminate)
     #
     @blocking = true
+    attach_function :xs_errno, [], :int
+    @blocking = true
     attach_function :xs_init, [:int], :pointer
+    @blocking = true
+    attach_function :xs_setctxopt, [:pointer, :int, :pointer, :int], :int
     @blocking = true
     attach_function :xs_socket, [:pointer, :int], :pointer
     @blocking = true
-    attach_function :xs_term, [:pointer], :int
-    @blocking = true
-    attach_function :xs_errno, [], :int
-    @blocking = true
     attach_function :xs_strerror, [:int], :pointer
+    @blocking = true
+    attach_function :xs_term, [:pointer], :int
     @blocking = true
     attach_function :xs_version, [:pointer, :pointer, :pointer], :void
 
@@ -63,22 +65,22 @@ module XS
 
     # Message api
     @blocking = true
+    attach_function :xs_msg_close, [:pointer], :int
+    @blocking = true
+    attach_function :xs_msg_copy, [:pointer, :pointer], :int
+    @blocking = true
+    attach_function :xs_msg_data, [:pointer], :pointer
+    @blocking = true
     attach_function :xs_msg_init, [:pointer], :int
     @blocking = true
     attach_function :xs_msg_init_size, [:pointer, :size_t], :int
     @blocking = true
     attach_function :xs_msg_init_data, [:pointer, :pointer, :size_t, :pointer, :pointer], :int
     @blocking = true
-    attach_function :xs_msg_close, [:pointer], :int
-    @blocking = true
-    attach_function :xs_msg_data, [:pointer], :pointer
+    attach_function :xs_msg_move, [:pointer, :pointer], :int
     @blocking = true
     attach_function :xs_msg_size, [:pointer], :size_t
-    @blocking = true
-    attach_function :xs_msg_copy, [:pointer, :pointer], :int
-    @blocking = true
-    attach_function :xs_msg_move, [:pointer, :pointer], :int
-
+    
     # Used for casting pointers back to the struct
     #
     class Msg < FFI::Struct
@@ -90,13 +92,23 @@ module XS
 
     # Socket api
     @blocking = true
-    attach_function :xs_setsockopt, [:pointer, :int, :pointer, :int], :int
-    @blocking = true
     attach_function :xs_bind, [:pointer, :string], :int
     @blocking = true
     attach_function :xs_connect, [:pointer, :string], :int
     @blocking = true
     attach_function :xs_close, [:pointer], :int
+    @blocking = true
+    attach_function :xs_getsockopt, [:pointer, :int, :pointer, :pointer], :int
+    @blocking = true
+    attach_function :xs_recvmsg, [:pointer, :pointer, :int], :int
+    @blocking = true
+    attach_function :xs_recv, [:pointer, :pointer, :size_t, :int], :int
+    @blocking = true
+    attach_function :xs_sendmsg, [:pointer, :pointer, :int], :int
+    @blocking = true
+    attach_function :xs_send, [:pointer, :pointer, :size_t, :int], :int
+    @blocking = true
+    attach_function :xs_setsockopt, [:pointer, :int, :pointer, :int], :int
 
     # Poll api
     @blocking = true
@@ -139,22 +151,6 @@ module XS
       def to_s; inspect; end
     end # class PollItem
 
-  end
-
-  # Attach to the API functions
-  #
-  module LibXS
-    # Socket api
-    @blocking = true
-    attach_function :xs_getsockopt, [:pointer, :int, :pointer, :pointer], :int
-    @blocking = true
-    attach_function :xs_recvmsg, [:pointer, :pointer, :int], :int
-    @blocking = true
-    attach_function :xs_recv, [:pointer, :pointer, :size_t, :int], :int
-    @blocking = true
-    attach_function :xs_sendmsg, [:pointer, :pointer, :int], :int
-    @blocking = true
-    attach_function :xs	_send, [:pointer, :pointer, :size_t, :int], :int
   end
 
 end # module XS

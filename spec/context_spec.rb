@@ -10,19 +10,6 @@ module XS
     context "when initializing with factory method #create" do
       include APIHelper
 
-      it "should return nil for negative io threads" do
-        LibXS.stub(:xs_init => nil)
-        Context.create(-1).should be_nil
-      end
-      
-      it "should default to requesting 1 i/o thread when no argument is passed" do
-        ctx = mock('ctx')
-        ctx.stub!(:null? => false)
-        LibXS.should_receive(:xs_init).with(1).and_return(ctx)
-        
-        Context.create
-      end
-
       it "should set the :pointer accessor to non-nil" do
         ctx = Context.create
         ctx.pointer.should_not be_nil
@@ -48,19 +35,6 @@ module XS
     context "when initializing with #new" do
       include APIHelper
 
-      it "should raise an error for negative io threads" do
-        LibXS.stub(:xs_init => nil)
-        lambda { Context.new(-1) }.should raise_exception(XS::ContextError)
-      end
-      
-      it "should default to requesting 1 i/o thread when no argument is passed" do
-        ctx = mock('ctx')
-        ctx.stub!(:null? => false)
-        LibXS.should_receive(:xs_init).with(1).and_return(ctx)
-        
-        Context.new
-      end
-
       it "should set the :pointer accessor to non-nil" do
         ctx = Context.new
         ctx.pointer.should_not be_nil
@@ -78,10 +52,68 @@ module XS
       
       it "should define a finalizer on this object" do
         ObjectSpace.should_receive(:define_finalizer)
-        ctx = Context.new 1
+        ctx = Context.new
       end
     end # context initializing
 
+    context "when setting context options" do
+      include APIHelper
+      
+      it "gets EINVAL when option name is not recognized" do
+        ctx = Context.new
+        rc = ctx.setctxopt(XS::IDENTITY, 10)
+        Util.resultcode_ok?(rc).should be_false
+        XS::Util.errno.should == XS::EINVAL
+      end
+    end
+    
+    context "when setting IO_THREADS context option" do
+      include APIHelper
+      
+      it "should return unsuccessful code for zero io threads" do
+        ctx = Context.new
+        rc = ctx.setctxopt(XS::IO_THREADS, 0)
+        Util.resultcode_ok?(rc).should be_false
+        XS::Util.errno.should == XS::EINVAL
+      end
+      
+      it "should return unsuccessful code for negative io threads" do
+        ctx = Context.new
+        rc = ctx.setctxopt(XS::IO_THREADS, -1)
+        Util.resultcode_ok?(rc).should be_false
+        XS::Util.errno.should == XS::EINVAL
+      end
+      
+      it "should return successful code for positive io threads" do
+        ctx = Context.new
+        rc = ctx.setctxopt(XS::IO_THREADS, 10)
+        Util.resultcode_ok?(rc).should be_true
+      end
+    end # context set IO_THREADS
+
+
+    context "when setting MAX_SOCKETS context option" do
+      include APIHelper
+      
+      it "should return successful code for zero max sockets" do
+        ctx = Context.new
+        rc = ctx.setctxopt(XS::MAX_SOCKETS, 0)
+        Util.resultcode_ok?(rc).should be_true
+      end
+      
+      it "should return unsuccessful code for negative max sockets" do
+        ctx = Context.new
+        rc = ctx.setctxopt(XS::MAX_SOCKETS, -1)
+        Util.resultcode_ok?(rc).should be_false
+        XS::Util.errno.should == XS::EINVAL
+      end
+      
+      it "should return successful code for positive max sockets" do
+        ctx = Context.new
+        rc = ctx.setctxopt(XS::MAX_SOCKETS, 100)
+        Util.resultcode_ok?(rc).should be_true
+      end
+    end # context set MAX_SOCKETS
 
     context "when terminating" do
       it "should call xs_term to terminate the library's context" do

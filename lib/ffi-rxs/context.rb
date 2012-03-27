@@ -45,19 +45,47 @@ module XS
 
     attr_reader :context, :pointer
 
-    def self.create io_threads = 1
-      new(io_threads) rescue nil
+    def self.create
+      new() rescue nil
     end
     
     # Use the factory method Context#create to make contexts.
     #
-    def initialize io_threads = 1
+    def initialize
       @sockets = []
-      @context = LibXS.xs_init io_threads
+      @context = LibXS.xs_init()
       @pointer = @context
       error_check 'xs_init', (@context.nil? || @context.null?) ? -1 : 0
 
       define_finalizer
+    end
+    
+    # Set options on this context.
+    #
+    # Context options take effect only if set with setctxopt() prior to
+    # creating the first socket in a given context with socket().
+    #
+    # Valid +name+ values that take a numeric +value+ are:
+    #  XS::IO_THREADS
+    #  XS::MAX_SOCKETS
+    #
+    # Returns 0 when the operation completed successfully.
+    # Returns -1 when this operation failed.
+    #
+    # With a -1 return code, the user must check XS.errno to determine the
+    # cause.
+    #
+    #  rc = context.setctxopt(XS::IO_THREADS, 10)
+    #  XS::Util.resultcode_ok?(rc) ? puts("succeeded") : puts("failed")
+    #
+    def setctxopt name, value, length = nil
+      length = 4
+      pointer = LibC.malloc length
+      pointer.write_int value
+
+      rc = LibXS.xs_setctxopt @context, name, pointer, length
+      LibC.free(pointer) unless pointer.nil? || pointer.null?
+      rc
     end
 
     # Call to release the context and any remaining data associated

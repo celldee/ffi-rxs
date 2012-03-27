@@ -74,52 +74,50 @@ module XS
     end # context calling close
 
 
+    context "identity=" do
+      before(:all) { @ctx = Context.new }
+      after(:all) { @ctx.terminate }
 
-      context "identity=" do
-        before(:all) { @ctx = Context.new }
-        after(:all) { @ctx.terminate }
+      it "fails to set identity for identities in excess of 255 bytes" do
+        sock = Socket.new @ctx.pointer, XS::REQ
 
-        it "fails to set identity for identities in excess of 255 bytes" do
-          sock = Socket.new @ctx.pointer, XS::REQ
+        sock.identity = ('a' * 256)
+        sock.identity.should == ''
+        sock.close
+      end
 
-          sock.identity = ('a' * 256)
-          sock.identity.should == ''
-          sock.close
-        end
+      it "fails to set identity for identities of length 0" do
+        sock = Socket.new @ctx.pointer, XS::REQ
 
-        it "fails to set identity for identities of length 0" do
-          sock = Socket.new @ctx.pointer, XS::REQ
+        sock.identity = ''
+        sock.identity.should == ''
+        sock.close
+      end
 
-          sock.identity = ''
-          sock.identity.should == ''
-          sock.close
-        end
+      it "sets the identity for identities of 1 byte" do
+        sock = Socket.new @ctx.pointer, XS::REQ
 
-        it "sets the identity for identities of 1 byte" do
-          sock = Socket.new @ctx.pointer, XS::REQ
+        sock.identity = 'a'
+        sock.identity.should == 'a'
+        sock.close
+      end
 
-          sock.identity = 'a'
-          sock.identity.should == 'a'
-          sock.close
-        end
+      it "set the identity identities of 255 bytes" do
+        sock = Socket.new @ctx.pointer, XS::REQ
 
-        it "set the identity identities of 255 bytes" do
-          sock = Socket.new @ctx.pointer, XS::REQ
+        sock.identity = ('a' * 255)
+        sock.identity.should == ('a' * 255)
+        sock.close
+      end
 
-          sock.identity = ('a' * 255)
-          sock.identity.should == ('a' * 255)
-          sock.close
-        end
+      it "should convert numeric identities to strings" do
+        sock = Socket.new @ctx.pointer, XS::REQ
 
-        it "should convert numeric identities to strings" do
-          sock = Socket.new @ctx.pointer, XS::REQ
-
-          sock.identity = 7
-          sock.identity.should == '7'
-          sock.close
-        end
-      end # context identity=
-
+        sock.identity = 7
+        sock.identity.should == '7'
+        sock.close
+      end
+    end # context identity=
 
 
     socket_types.each do |socket_type|
@@ -135,102 +133,29 @@ module XS
         after(:each) do
           socket.close
         end
+        
 
+        context "using option XS::IDENTITY" do
+          it "should set the identity given any string under 255 characters" do
+            length = 4
+            (1..255).each do |length|
+              identity = 'a' * length
+              socket.setsockopt XS::IDENTITY, identity
 
-          context "using option XS::IDENTITY" do
-            it "should set the identity given any string under 255 characters" do
-              length = 4
-              (1..255).each do |length|
-                identity = 'a' * length
-                socket.setsockopt XS::IDENTITY, identity
-
-                array = []
-                rc = socket.getsockopt(XS::IDENTITY, array)
-                rc.should == 0
-                array[0].should == identity
-              end
-            end
-
-            it "returns -1 given a string 256 characters or longer" do
-              identity = 'a' * 256
               array = []
-              rc = socket.setsockopt(XS::IDENTITY, identity)
-              rc.should == -1
-            end
-          end # context using option XS::IDENTITY
-
-
-        if version2?
-
-          context "using option XS::HWM" do
-            it "should set the high water mark given a positive value" do
-              hwm = 4
-              socket.setsockopt XS::HWM, hwm
-              array = []
-              rc = socket.getsockopt(XS::HWM, array)
+              rc = socket.getsockopt(XS::IDENTITY, array)
               rc.should == 0
-              array[0].should == hwm
+              array[0].should == identity
             end
-          end # context using option XS::HWM
+          end
 
-
-          context "using option XS::SWAP" do
-            it "should set the swap value given a positive value" do
-              swap = 10_000
-              socket.setsockopt XS::SWAP, swap
-              array = []
-              rc = socket.getsockopt(XS::SWAP, array)
-              rc.should == 0
-              array[0].should == swap
-            end
-
-            it "returns -1 given a negative value" do
-              swap = -10_000
-              rc = socket.setsockopt(XS::SWAP, swap)
-              rc.should == -1
-            end
-          end # context using option XS::SWP
-
-
-          context "using option XS::MCAST_LOOP" do
-            it "should enable the multicast loopback given a 1 (true) value" do
-              socket.setsockopt XS::MCAST_LOOP, 1
-              array = []
-              rc = socket.getsockopt(XS::MCAST_LOOP, array)
-              rc.should == 0
-              array[0].should be_true
-            end
-
-            it "should disable the multicast loopback given a 0 (false) value" do
-              socket.setsockopt XS::MCAST_LOOP, 0
-              array = []
-              rc = socket.getsockopt(XS::MCAST_LOOP, array)
-              rc.should == 0
-              array[0].should be_false
-            end
-          end # context using option XS::MCAST_LOOP
-
-
-          context "using option XS::RECOVERY_IVL_MSEC" do
-            it "should set the time interval for saving messages measured in milliseconds given a positive value" do
-              value = 200
-              socket.setsockopt XS::RECOVERY_IVL_MSEC, value
-              array = []
-              rc = socket.getsockopt(XS::RECOVERY_IVL_MSEC, array)
-              rc.should == 0
-              array[0].should == value
-            end
-
-            it "should default to a value of -1" do
-              value = -1
-              array = []
-              rc = socket.getsockopt(XS::RECOVERY_IVL_MSEC, array)
-              rc.should == 0
-              array[0].should == value
-            end
-          end # context using option XS::RECOVERY_IVL_MSEC
-
-        end # version2?
+          it "returns -1 given a string 256 characters or longer" do
+            identity = 'a' * 256
+            array = []
+            rc = socket.setsockopt(XS::IDENTITY, identity)
+            rc.should == -1
+          end
+        end # context using option XS::IDENTITY
 
 
         context "using option XS::SUBSCRIBE" do
@@ -356,7 +281,8 @@ module XS
             array[0].should == value
           end
 
-          if (defined?(XS::XSUB) && XS::XSUB == socket_type)
+          if (defined?(XS::XSUB) && XS::XSUB == socket_type) or
+             (defined?(XS::SUB) && XS::SUB == socket_type)
             it "should default to a value of 0" do
               value = 0
               array = []
@@ -508,6 +434,7 @@ module XS
           events = []
           rc = @sub.getsockopt(XS::EVENTS, events)
           rc.should == 0
+          puts 'What: ' + events[0].to_s
           events[0].should == XS::POLLIN
         end
 

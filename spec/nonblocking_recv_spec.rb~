@@ -1,7 +1,7 @@
 
 require File.join(File.dirname(__FILE__), %w[spec_helper])
 
-module ZMQ
+module XS
 
 
   describe Socket do
@@ -18,19 +18,19 @@ module ZMQ
 
       it "returns -1 when there are no messages to read" do
         array = []
-        rc = @receiver.recvmsgs(array, ZMQ::NonBlocking)
+        rc = @receiver.recvmsgs(array, XS::NonBlocking)
         Util.resultcode_ok?(rc).should be_false
       end
 
       it "gets EAGAIN when there are no messages to read" do
         array = []
-        rc = @receiver.recvmsgs(array, ZMQ::NonBlocking)
-        ZMQ::Util.errno.should == ZMQ::EAGAIN
+        rc = @receiver.recvmsgs(array, XS::NonBlocking)
+        XS::Util.errno.should == XS::EAGAIN
       end
 
       it "returns the given array unmodified when there are no messages to read" do
         array = []
-        rc = @receiver.recvmsgs(array, ZMQ::NonBlocking)
+        rc = @receiver.recvmsgs(array, XS::NonBlocking)
         array.size.should be_zero
       end
 
@@ -44,7 +44,7 @@ module ZMQ
         sleep 0.1 # give it time to deliver to the receiver
 
         array = []
-        rc = @receiver.recvmsgs(array, ZMQ::NonBlocking)
+        rc = @receiver.recvmsgs(array, XS::NonBlocking)
         Util.resultcode_ok?(rc).should be_true
         array.size.should == 1
       end
@@ -56,7 +56,7 @@ module ZMQ
         sleep 0.1 # give it time to deliver to the sub socket
 
         array = []
-        rc = @receiver.recvmsgs(array, ZMQ::NonBlocking)
+        rc = @receiver.recvmsgs(array, XS::NonBlocking)
         Util.resultcode_ok?(rc).should be_true
         array.size.should == 10
       end
@@ -71,7 +71,7 @@ module ZMQ
         sleep 0.1 # give it time to deliver to the receiver
 
         array = []
-        rc = @receiver.recvmsgs(array, ZMQ::NonBlocking)
+        rc = @receiver.recvmsgs(array, XS::NonBlocking)
         Util.resultcode_ok?(rc).should be_true
         array.size.should == 1 + 1 # extra 1 for envelope
       end
@@ -83,7 +83,7 @@ module ZMQ
         sleep 0.1 # give it time to deliver to the sub socket
 
         array = []
-        rc = @receiver.recvmsgs(array, ZMQ::NonBlocking)
+        rc = @receiver.recvmsgs(array, XS::NonBlocking)
         Util.resultcode_ok?(rc).should be_true
         array.size.should == 10 + 1 # add 1 for the envelope
       end
@@ -96,10 +96,10 @@ module ZMQ
         include APIHelper
 
         before(:each) do
-          @receiver = @ctx.socket ZMQ::SUB
+          @receiver = @ctx.socket XS::SUB
           port = bind_to_random_tcp_port(@receiver)
-          assert_ok(@receiver.setsockopt(ZMQ::SUBSCRIBE, ''))
-          @sender = @ctx.socket ZMQ::PUB
+          assert_ok(@receiver.setsockopt(XS::SUBSCRIBE, ''))
+          @sender = @ctx.socket XS::PUB
           assert_ok(@sender.connect("tcp://127.0.0.1:#{port}"))
           sleep 0.3
         end
@@ -118,10 +118,10 @@ module ZMQ
         include APIHelper
 
         before(:each) do
-          @receiver = @ctx.socket ZMQ::SUB
+          @receiver = @ctx.socket XS::SUB
           port = connect_to_random_tcp_port(@receiver)
-          assert_ok(@receiver.setsockopt(ZMQ::SUBSCRIBE, ''))
-          @sender = @ctx.socket ZMQ::PUB
+          assert_ok(@receiver.setsockopt(XS::SUBSCRIBE, ''))
+          @sender = @ctx.socket XS::PUB
           assert_ok(@sender.bind("tcp://127.0.0.1:#{port}"))
           sleep 0.3
         end
@@ -144,9 +144,9 @@ module ZMQ
         include APIHelper
 
         before(:each) do
-          @receiver = @ctx.socket ZMQ::REP
+          @receiver = @ctx.socket XS::REP
           port = bind_to_random_tcp_port(@receiver)
-          @sender = @ctx.socket ZMQ::REQ
+          @sender = @ctx.socket XS::REQ
           assert_ok(@sender.connect("tcp://127.0.0.1:#{port}"))
           sleep 0.1
         end
@@ -165,9 +165,9 @@ module ZMQ
         include APIHelper
 
         before(:each) do
-          @receiver = @ctx.socket ZMQ::REP
+          @receiver = @ctx.socket XS::REP
           port = connect_to_random_tcp_port(@receiver)
-          @sender = @ctx.socket ZMQ::REQ
+          @sender = @ctx.socket XS::REQ
           assert_ok(@sender.bind("tcp://127.0.0.1:#{port}"))
           sleep 0.1
         end
@@ -191,9 +191,9 @@ module ZMQ
         include APIHelper
 
         before(:each) do
-          @receiver = @ctx.socket ZMQ::PULL
+          @receiver = @ctx.socket XS::PULL
           port = bind_to_random_tcp_port(@receiver)
-          @sender = @ctx.socket ZMQ::PUSH
+          @sender = @ctx.socket XS::PUSH
           assert_ok(@sender.connect("tcp://127.0.0.1:#{port}"))
           sleep 0.1
         end
@@ -212,9 +212,9 @@ module ZMQ
         include APIHelper
 
         before(:each) do
-          @receiver = @ctx.socket ZMQ::PULL
+          @receiver = @ctx.socket XS::PULL
           port = connect_to_random_tcp_port(@receiver)
-          @sender = @ctx.socket ZMQ::PUSH
+          @sender = @ctx.socket XS::PUSH
           assert_ok(@sender.bind("tcp://127.0.0.1:#{port}"))
           sleep 0.1
         end
@@ -238,9 +238,9 @@ module ZMQ
         include APIHelper
 
         before(:each) do
-          @receiver = @ctx.socket ZMQ::ROUTER
+          @receiver = @ctx.socket XS::ROUTER
           port = bind_to_random_tcp_port(@receiver)
-          @sender = @ctx.socket ZMQ::DEALER
+          @sender = @ctx.socket XS::DEALER
           assert_ok(@sender.connect("tcp://127.0.0.1:#{port}"))
           sleep 0.1
         end
@@ -259,9 +259,9 @@ module ZMQ
         include APIHelper
 
         before(:each) do
-          @receiver = @ctx.socket ZMQ::ROUTER
+          @receiver = @ctx.socket XS::ROUTER
           port = connect_to_random_tcp_port(@receiver)
-          @sender = @ctx.socket ZMQ::DEALER
+          @sender = @ctx.socket XS::DEALER
           assert_ok(@sender.bind("tcp://127.0.0.1:#{port}"))
           sleep 0.1
         end
@@ -285,9 +285,9 @@ module ZMQ
         include APIHelper
 
         before(:each) do
-          @receiver = @ctx.socket ZMQ::XREP
+          @receiver = @ctx.socket XS::XREP
           port = bind_to_random_tcp_port(@receiver)
-          @sender = @ctx.socket ZMQ::XREQ
+          @sender = @ctx.socket XS::XREQ
           assert_ok(@sender.connect("tcp://127.0.0.1:#{port}"))
           sleep 0.1
         end
@@ -306,9 +306,9 @@ module ZMQ
         include APIHelper
 
         before(:each) do
-          @receiver = @ctx.socket ZMQ::XREP
+          @receiver = @ctx.socket XS::XREP
           port = connect_to_random_tcp_port(@receiver)
-          @sender = @ctx.socket ZMQ::XREQ
+          @sender = @ctx.socket XS::XREQ
           assert_ok(@sender.bind("tcp://127.0.0.1:#{port}"))
           sleep 0.1
         end
@@ -328,4 +328,4 @@ module ZMQ
   end # describe Socket
 
 
-end # module ZMQ
+end # module XS

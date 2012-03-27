@@ -35,7 +35,7 @@ module XS
     # sockets. These sockets should be processed using the #readables and
     # #writables accessors.
     #
-    # Returns -1 when there is an error. Use ZMQ::Util.errno to get the related
+    # Returns -1 when there is an error. Use XS::Util.errno to get the related
     # error number.
     #
     def poll timeout = :blocking
@@ -56,7 +56,7 @@ module XS
     # The non-blocking version of #poll. See the #poll description for
     # potential exceptions.
     #
-    # May return -1 when an error is encounted. Check ZMQ::Util.errno
+    # May return -1 when an error is encounted. Check XS::Util.errno
     # to determine the underlying cause.
     #
     def poll_nonblock

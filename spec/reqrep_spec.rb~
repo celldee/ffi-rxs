@@ -1,7 +1,7 @@
 
 require File.join(File.dirname(__FILE__), %w[spec_helper])
 
-module ZMQ
+module XS
 
 
   describe Context do
@@ -12,9 +12,9 @@ module ZMQ
       let(:string) { "booga-booga" }
 
       before(:each) do
-        context = ZMQ::Context.new 1
-        @ping = context.socket ZMQ::REQ
-        @pong = context.socket ZMQ::REP
+        context = XS::Context.new
+        @ping = context.socket XS::REQ
+        @pong = context.socket XS::REP
         port = bind_to_random_tcp_port(@pong)
         @ping.connect "tcp://127.0.0.1:#{port}"
       end
@@ -37,9 +37,9 @@ module ZMQ
         received_message = Message.new
 
         rc = @ping.sendmsg sent_message
-        LibZMQ.version2? ? rc.should == 0 : rc.should == string.size
+        rc.should == string.size
         rc = @pong.recvmsg received_message
-        LibZMQ.version2? ? rc.should == 0 : rc.should == string.size
+        rc.should == string.size
 
         received_message.copy_out_string.should == string
       end
@@ -48,11 +48,11 @@ module ZMQ
         sent_message = Message.new string
         received_message = Message.new
 
-        rc = @ping.sendmsg sent_message, ZMQ::NonBlocking
-        LibZMQ.version2? ? rc.should == 0 : rc.should == string.size
+        rc = @ping.sendmsg sent_message, XS::NonBlocking
+        rc.should == string.size
         sleep 0.001 # give it time for delivery
-        rc = @pong.recvmsg received_message, ZMQ::NonBlocking
-        LibZMQ.version2? ? rc.should == 0 : rc.should == string.size
+        rc = @pong.recvmsg received_message, XS::NonBlocking
+        rc.should == string.size
 
         received_message.copy_out_string.should == string
       end
@@ -63,4 +63,4 @@ module ZMQ
   end # describe
 
 
-end # module ZMQ
+end # module XS

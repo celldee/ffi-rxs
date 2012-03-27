@@ -12,7 +12,7 @@ module XS
       let(:string) { "booga-booga" }
 
       before(:each) do
-        context = XS::Context.new 1
+        context = XS::Context.new
         @ping = context.socket XS::REQ
         @pong = context.socket XS::REP
         port = bind_to_random_tcp_port(@pong)
@@ -50,7 +50,7 @@ module XS
 
         rc = @ping.sendmsg sent_message, XS::NonBlocking
         rc.should == string.size
-        sleep 0.001 # give it time for delivery
+        sleep 0.01 # give it time for delivery
         rc = @pong.recvmsg received_message, XS::NonBlocking
         rc.should == string.size
 
