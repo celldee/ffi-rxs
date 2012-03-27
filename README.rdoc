@@ -41,7 +41,7 @@ you will be sad.
 
 == INSTALL:
 
-A full gem has been released to Rubygems.org as of release 0.1.0.
+A full gem has been released to Rubygems.org as of release 1.0.0.
 Make sure the Crossroads I/O library is already installed on your system.
 
  % gem install ffi-rxs # should grab the latest release
