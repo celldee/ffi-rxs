@@ -2,20 +2,8 @@
 
 module XS
 
-
-  # Recommended to use the default for +io_threads+
-  # since most programs will not saturate I/O. 
-  #
-  # The rule of thumb is to make +io_threads+ equal to the number 
-  # gigabits per second that the application will produce.
-  #
-  # The +io_threads+ number specifies the size of the thread pool
-  # allocated by 0mq for processing incoming/outgoing messages.
-  #
-  # Returns a context object when allocation succeeds. It's necessary
-  # for passing to the
-  # #Socket constructor when allocating new sockets. All sockets
-  # live within a context.
+  # All sockets exist within a context and a context is passed to the
+  # Socket constructor when allocating new sockets.
   #
   # Also, Sockets should *only* be accessed from the thread where they
   # were first created. Do *not* pass sockets between threads; pass
@@ -28,30 +16,29 @@ module XS
   # recommended technique for allowing sockets to communicate between
   # threads.
   #
-  #  context = XS::Context.create
-  #  if context
-  #    socket = context.socket(XS::REQ)
-  #    if socket
-  #      ...
-  #    else
-  #      STDERR.puts "Socket allocation failed"
-  #    end
-  #  else
-  #    STDERR.puts "Context allocation failed"
-  #  end
-  #
-  #
+  # @example Create context and socket
+  #   context = XS::Context.create
+  #   if context
+  #     socket = context.socket(XS::REQ)
+  #     if socket
+  #       ...
+  #     else
+  #       STDERR.puts "Socket allocation failed"
+  #     end
+  #   else
+  #     STDERR.puts "Context allocation failed"
+  #   end
   class Context
     include XS::Util
 
     attr_reader :context, :pointer
 
+    # Factory method to instantiate contexts
     def self.create
       new() rescue nil
     end
     
-    # Use the factory method Context#create to make contexts.
-    #
+    # Initialize context object
     def initialize
       @sockets = []
       @context = LibXS.xs_init()
@@ -61,25 +48,36 @@ module XS
       define_finalizer
     end
     
-    # Set options on this context.
+    # Sets options on a context.
     #
-    # Context options take effect only if set with setctxopt() prior to
-    # creating the first socket in a given context with socket().
+    # It is recommended to use the default for +io_threads+
+    # (which is 1) since most programs will not saturate I/O. 
     #
-    # Valid +name+ values that take a numeric +value+ are:
-    #  XS::IO_THREADS
-    #  XS::MAX_SOCKETS
+    # The rule of thumb is to make io_threads equal to the number 
+    # of gigabits per second that the application will produce.
     #
-    # Returns 0 when the operation completed successfully.
-    # Returns -1 when this operation failed.
+    # The io_threads number specifies the size of the thread pool
+    # allocated by Crossroads for processing incoming/outgoing messages.
     #
-    # With a -1 return code, the user must check XS.errno to determine the
-    # cause.
+    # The +max_sockets+ number specifies the number of concurrent
+    # sockets that can be used in the context. The default is 512.
     #
-    #  rc = context.setctxopt(XS::IO_THREADS, 10)
-    #  XS::Util.resultcode_ok?(rc) ? puts("succeeded") : puts("failed")
+    # Context options take effect only if set with **setctxopt()** prior to
+    # creating the first socket in a given context with **socket()**.
     #
-    def setctxopt name, value, length = nil
+    # @param [Constant] name
+    #   One of @XS::IO_THREADS@ or @XS::MAX_SOCKETS@.
+    # @param [Integer] value  
+    #  
+    # @return 0 when the operation completed successfully.
+    # @return -1 when this operation fails.
+    #
+    # @example Set io_threads context option
+    #   rc = context.setctxopt(XS::IO_THREADS, 10)
+    #   unless XS::Util.resultcode_ok?(rc)
+    #     raise XS::ContextError.new('xs_setctxopt', rc, XS::Util.errno, XS::Util.error_string)
+    #   end
+    def setctxopt name, value
       length = 4
       pointer = LibC.malloc length
       pointer.write_int value
@@ -89,13 +87,13 @@ module XS
       rc
     end
 
-    # Call to release the context and any remaining data associated
+    # Releases the context and any remaining data associated
     # with past sockets. This will close any sockets that remain
     # open; further calls to those sockets will return -1 to indicate
     # the operation failed.
     #
-    # Returns 0 for success, -1 for failure.
-    #
+    # @return 0 for success
+    # @return -1 for failure
     def terminate
       unless @context.nil? || @context.null?
         remove_finalizer
@@ -108,22 +106,14 @@ module XS
       end
     end
 
-    # Short-cut to allocate a socket for a specific context.
+    # Allocates a socket for context
     #
-    # Takes several +type+ values:
-    #   #XS::REQ
-    #   #XS::REP
-    #   #XS::PUB
-    #   #XS::SUB
-    #   #XS::PAIR
-    #   #XS::PULL
-    #   #XS::PUSH
-    #   #XS::DEALER
-    #   #XS::ROUTER
+    # @param [Constant] type
+    #   One of @XS::REQ@, @XS::REP@, @XS::PUB@, @XS::SUB@, @XS::PAIR@,
+    #          @XS::PULL@, @XS::PUSH@, @XS::DEALER@, or @XS::ROUTER@
     #
-    # Returns a #XS::Socket when the allocation succeeds, nil
-    # if it fails.
-    #
+    # @return [Socket] when the allocation succeeds
+    # @return nil when call fails
     def socket type
       sock = nil
       begin
@@ -138,14 +128,17 @@ module XS
 
     private
 
+    # Deletes native resources after object has been destroyed
     def define_finalizer
       ObjectSpace.define_finalizer(self, self.class.close(@context))
     end
-
+    
+    # Removes all finalizers for object
     def remove_finalizer
       ObjectSpace.undefine_finalizer self
     end
 
+    # Closes the context
     def self.close context
       Proc.new { LibXS.xs_term context unless context.null? }
     end

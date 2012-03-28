@@ -17,11 +17,11 @@
 # If you supply a zip code argument then the maximum value that will
 # be recognized is 11000.
 
-require 'ffi-rxs'
+require File.join(File.dirname(__FILE__), '..', 'lib', 'ffi-rxs')
 
 COUNT = 100
 
-context = XS::Context.new()
+context = XS::Context.create()
 
 # Socket to talk to server
 puts "Collecting updates from weather server..."

@@ -1,3 +1,9 @@
+= Version 1.0.1
+
+  * Re-working of some ZeroMQ examples
+  * Addition of missing socket option constant XS::IPV4ONLY
+  * Editing of inline comments for Yard documentation
+
 = Version 1.0.0
 
   * Initial release

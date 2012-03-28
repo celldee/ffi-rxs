@@ -23,7 +23,7 @@ module XS
       unless @items.empty? || index.nil?
         clean
 
-        # pointer arithmetic in ruby! whee!
+        # pointer arithmetic in ruby
         pointer = @store + (@element_size * index)
 
         # cast the memory to a PollItem

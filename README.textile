@@ -46,7 +46,7 @@ require 'ffi-rxs'
 
 msg_in = ''
 
-ctx = XS::Context.new()
+ctx = XS::Context.create()
 socket = ctx.socket(XS::REQ)
 socket.connect("tcp://127.0.0.1:5000")
  
@@ -66,7 +66,7 @@ require 'ffi-rxs'
 
 msg = ''
 
-ctx = XS::Context.new()
+ctx = XS::Context.create()
 socket = ctx.socket(XS::REP)
 socket.bind("tcp://127.0.0.1:5000")
  

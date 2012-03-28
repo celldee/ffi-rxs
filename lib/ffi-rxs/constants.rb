@@ -7,7 +7,7 @@ module XS
   MAX_SOCKETS = 1
   IO_THREADS = 2
   
-  #  Socket types
+  # Socket types
   PAIR = 0
   PUB = 1
   SUB = 2
@@ -38,7 +38,7 @@ module XS
     XSUB => "XSUB"
   }
 
-  #  Socket options
+  # Socket options
   AFFINITY = 4
   IDENTITY = 5
   SUBSCRIBE = 6
@@ -61,21 +61,22 @@ module XS
   MULTICAST_HOPS = 25
   RCVTIMEO = 27
   SNDTIMEO = 28
+  IPV4ONLY = 31
+  
+  # Message options
+  MORE = 1
 
-  #  Send/recv options
+  # Send/recv options
   DONTWAIT = 1
   SNDMORE = 2
-  SNDLABEL = 4
   NonBlocking = DONTWAIT
 
-  #  I/O multiplexing
-
-  POLL = 1
+  # I/O multiplexing
   POLLIN = 1
   POLLOUT = 2
   POLLERR = 4
 
-  #  Socket errors
+  # Socket errors
   EAGAIN = Errno::EAGAIN::Errno
   EFAULT = Errno::EFAULT::Errno
   EINVAL = Errno::EINVAL::Errno
@@ -90,9 +91,9 @@ module XS
   ENOCOMPATPROTO = (HAUSNUMERO + 52)
   ETERM          = (HAUSNUMERO + 53)
 
-  # Rescue unknown constants and use the Crossroads defined values
-  # Usually only happens on Windows though some don't resolve on
-  # OSX too (ENOTSUP)
+  # Rescue unknown constants and use the Crossroads defined values.
+  # Usually only happens on Windows although some do not resolve on
+  # OSX either _ENOTSUP_
   ENOTSUP         = Errno::ENOTSUP::Errno rescue (HAUSNUMERO + 1)
   EPROTONOSUPPORT = Errno::EPROTONOSUPPORT::Errno rescue (HAUSNUMERO + 2)
   ENOBUFS         = Errno::ENOBUFS::Errno rescue (HAUSNUMERO + 3)

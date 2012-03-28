@@ -29,16 +29,14 @@ module XS
     # this possible condition (via #size) and throttle the call
     # frequency.
     #
-    # Returns 0 when there are no registered sockets that are readable
-    # or writable. 
-    # 
-    # Return 1 (or greater) to indicate the number of readable or writable
+    # @param timeout
+    # @return 0 when there are no registered sockets that are readable
+    # or writable.
+    # @return 1 (or greater) to indicate the number of readable or writable
     # sockets. These sockets should be processed using the #readables and
     # #writables accessors.
-    #
-    # Returns -1 when there is an error. Use XS::Util.errno to get the related
+    # @return -1 when there is an error. Use XS::Util.errno to get the related
     # error number.
-    #
     def poll timeout = :blocking
       unless @items.empty?
         timeout = adjust timeout
@@ -57,9 +55,8 @@ module XS
     # The non-blocking version of #poll. See the #poll description for
     # potential exceptions.
     #
-    # May return -1 when an error is encounted. Check XS::Util.errno
+    # May return -1 when an error is encountered. Check XS::Util.errno
     # to determine the underlying cause.
-    #
     def poll_nonblock
       poll 0
     end
@@ -68,7 +65,6 @@ module XS
     # it can be called multiple times with the same data and the socket
     # will only get registered at most once. Calling multiple times with
     # different values for +events+ will OR the event information together.
-    #
     def register sock, events = XS::POLLIN | XS::POLLOUT, fd = 0
       return false if (sock.nil? && fd.zero?) || events.zero?
 
@@ -95,7 +91,6 @@ module XS
 
     # Deregister the +sock+ for +events+. When there are no events left,
     # this also deletes the socket from the poll items.
-    #
     def deregister sock, events, fd = 0
       return unless sock || !fd.zero?
 
@@ -113,25 +108,21 @@ module XS
     end
 
     # A helper method to register a +sock+ as readable events only.
-    #
     def register_readable sock
       register sock, XS::POLLIN, 0
     end
 
     # A helper method to register a +sock+ for writable events only.
-    #
     def register_writable sock
       register sock, XS::POLLOUT, 0
     end
 
     # A helper method to deregister a +sock+ for readable events.
-    #
     def deregister_readable sock
       deregister sock, XS::POLLIN, 0
     end
 
     # A helper method to deregister a +sock+ for writable events.
-    #
     def deregister_writable sock
       deregister sock, XS::POLLOUT, 0
     end
@@ -142,7 +133,6 @@ module XS
     #
     # Can also be called directly to remove the socket from the polling
     # array.
-    #
     def delete sock
       unless (size = @sockets.size).zero?
         @sockets.delete_if { |socket| socket.socket.address == sock.socket.address }
@@ -199,8 +189,7 @@ module XS
     #
     # Users will pass in values measured as
     # milliseconds, so we need to convert that value to
-    # microseconds for the library.
-    
+    # microseconds for the library.   
     def adjust timeout
       if :blocking == timeout || -1 == timeout
         -1

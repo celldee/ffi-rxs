@@ -17,7 +17,7 @@ module XS
     # memory management. For automatic garbage collection of received messages,
     # it is possible to override the :receiver_class to use XS::ManagedMessage.
     #
-    #  sock = Socket.create(Context.create, XS::REQ, :receiver_class => XS::ManagedMessage)
+    # sock = Socket.create(Context.create, XS::REQ, :receiver_class => XS::ManagedMessage)
     #
     # Advanced users may want to replace the receiver class with their
     # own custom class. The custom class must conform to the same public API
@@ -26,11 +26,11 @@ module XS
     # Creation of a new Socket object can return nil when socket creation
     # fails.
     #
-    #  if (socket = Socket.new(context.pointer, XS::REQ))
-    #    ...
-    #  else
-    #    STDERR.puts "Socket creation failed"
-    #  end
+    # if (socket = Socket.new(context.pointer, XS::REQ))
+    #   ...
+    # else
+    #   STDERR.puts "Socket creation failed"
+    # end
     #
     def self.create context_ptr, type, opts = {:receiver_class => XS::Message}
       new(context_ptr, type, opts) rescue nil
@@ -49,7 +49,7 @@ module XS
     # memory management. For automatic garbage collection of received messages,
     # it is possible to override the :receiver_class to use XS::ManagedMessage.
     #
-    #  sock = Socket.new(Context.new, XS::REQ, :receiver_class => XS::ManagedMessage)
+    # sock = Socket.new(Context.new, XS::REQ, :receiver_class => XS::ManagedMessage)
     #
     # Advanced users may want to replace the receiver class with their
     # own custom class. The custom class must conform to the same public API
@@ -95,25 +95,22 @@ module XS
     #
     # Valid +name+ values that take a numeric +value+ are:
     #  XS::HWM
-    #  XS::SWAP (version 2 only)
     #  XS::AFFINITY
     #  XS::RATE
     #  XS::RECOVERY_IVL
-    #  XS::MCAST_LOOP (version 2 only)
     #  XS::LINGER
     #  XS::RECONNECT_IVL
     #  XS::BACKLOG
-    #  XS::RECOVER_IVL_MSEC (version 2 only)
-    #  XS::RECONNECT_IVL_MAX (version 3 only)
-    #  XS::MAXMSGSIZE (version 3 only)
-    #  XS::SNDHWM (version 3 only)
-    #  XS::RCVHWM (version 3 only)
-    #  XS::MULTICAST_HOPS (version 3 only)
-    #  XS::RCVTIMEO (version 3 only)
-    #  XS::SNDTIMEO (version 3 only)
+    #  XS::RECONNECT_IVL_MAX
+    #  XS::MAXMSGSIZE
+    #  XS::SNDHWM
+    #  XS::RCVHWM
+    #  XS::MULTICAST_HOPS
+    #  XS::RCVTIMEO
+    #  XS::SNDTIMEO
     #
     # Valid +name+ values that take a string +value+ are:
-    #  XS::IDENTITY (version 2/3 only)
+    #  XS::IDENTITY
     #  XS::SUBSCRIBE
     #  XS::UNSUBSCRIBE
     #
@@ -469,7 +466,7 @@ module XS
       rc
     end
 
-    # Calls to XS.getsockopt require us to pass in some pointers. We can cache and save those buffers
+    # Calls to xs_getsockopt require us to pass in some pointers. We can cache and save those buffers
     # for subsequent calls. This is a big perf win for calling RCVMORE which happens quite often.
     # Cannot save the buffer for the IDENTITY.
     def sockopt_buffers option_type

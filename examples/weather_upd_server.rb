@@ -16,10 +16,9 @@
 # method of your choice.
 #
 
+require File.join(File.dirname(__FILE__), '..', 'lib', 'ffi-rxs')
 
-require 'ffi-rxs'
-
-context = XS::Context.new()
+context = XS::Context.create()
 publisher = context.socket(XS::PUB)
 publisher.bind("tcp://127.0.0.1:5556")
 
