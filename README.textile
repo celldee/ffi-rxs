@@ -1,0 +1,88 @@
+h1. About ffi-rxs
+
+This gem wraps the "Crossroads I/O":http://crossroads.io networking library using the Ruby FFI (foreign function interface). It's a pure Ruby wrapper so this gem can be loaded and run by any Ruby runtime that supports FFI. That's all of them: MRI 1.9.x, Rubinius and JRuby.
+
+Crossroads I/O is a fork of ZeroMQ. This gem is a re-working of the ffi-rzmq gem created by Chuck Remes to provide bindings for the Crossroads I/O libxs C library instead of the ZeroMQ libzmq library. The gem auto-configures itself to expose the API conforming to the loaded C library. 
+
+h2. Features/Problems
+
+This gem needs to be tested in the wild. Please kick its tyres and give it a good thrashing. It is inevitable that bugs will be discovered, so please open issues for them here or fork this project, fix them, and send me a pull request.
+
+The 'ffi' gem has dropped support for MRI 1.8.x. Since this project relies on that gem to load and run this code, then this project does not support MRI 1.8.x. I recommend JRuby for the best performance and stability.
+
+h2. Requirements
+
+* Crossroads I/O version 1.0.0 or later.
+* ffi (>= 1.0.0)
+  
+The Crossroads I/O library must be installed on your system in a well-known location like /usr/local/lib. This is the default for new Crossroads I/O installs. Future releases may include the library as a C extension built at time of installation.
+  
+Do *not* run this gem under MRI with an old 'ffi' gem. It will crash randomly and you will be sad.
+
+h2. Installation
+
+A full gem has been released to Rubygems.org as of release 1.0.0. Make sure the Crossroads I/O library is already installed on your system.
+
+* gem install ffi-rxs # should grab the latest release
+
+
+To build from git master:
+
+* git clone git://github.com/celldee/ffi-rxs
+* cd ffi-rxs
+* gem build ffi-rxs.gemspec
+* gem install ffi-rxs-*.gem
+ 
+
+*NOTE* for Windows users!
+In order for this gem to find the libxs.dll, it *must* be on the Windows PATH. Google for "modify windows path" for instructions on how to do that if you are unfamiliar with that activity.
+
+h2. Examples
+
+h3. Using Request (REQ) socket -
+
+<pre>
+require 'ffi-rxs'
+
+msg_in = ''
+
+ctx = XS::Context.new()
+socket = ctx.socket(XS::REQ)
+socket.connect("tcp://127.0.0.1:5000")
+ 
+for i in 1..10
+  msg = "msg #{i.to_s}"
+  socket.send_string(msg)
+  puts "Sending: " + msg
+  socket.recv_string(msg_in)
+  puts "Received: " + msg_in
+end
+</pre>
+
+h3. Using Reply (REP) socket -
+
+<pre>
+require 'ffi-rxs'
+
+msg = ''
+
+ctx = XS::Context.new()
+socket = ctx.socket(XS::REP)
+socket.bind("tcp://127.0.0.1:5000")
+ 
+while true do
+  socket.recv_string(msg)
+  puts "Got: " + msg
+  socket.send_string(msg)
+end
+</pre>
+
+h2. Links
+
+* "Source code":http://github.com/celldee/ffi-rxs
+* "Crossroads I/O website":http://crossroads.io
+* "Crossroads I/O Discussion Group":http://groups.crossroads.io/
+
+h2. License
+
+This project is licensed under the MIT license. Please see the LICENSE file in the repository.
