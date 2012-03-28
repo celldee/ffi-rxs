@@ -8,11 +8,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Chris Duncan"]
   s.email       = ["celldee@gmail.com"]
   s.homepage    = "http://github.com/celldee/ffi-rxs"
-  s.summary     = %q{This gem wraps the Crossroads I/O networking library using Ruby FFI (foreign function interface).}
-  s.description = %q{This gem wraps the Crossroads I/O networking library using the ruby FFI (foreign
-function interface). It's a pure ruby wrapper so this gem can be loaded
-and run by any ruby runtime that supports FFI. That's all of them:
-MRI 1.9.x, Rubinius and JRuby.}
+  s.summary     = %q{Ruby FFI bindings for Crossroads I/O networking library.}
+  s.description = %q{Ruby FFI bindings for Crossroads I/O networking library.}
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
