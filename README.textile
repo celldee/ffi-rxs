@@ -77,6 +77,8 @@ while true do
 end
 </pre>
 
+The above examples and additional ones are available in the repository examples folder.
+
 h2. Links
 
 * "Source code":http://github.com/celldee/ffi-rxs
