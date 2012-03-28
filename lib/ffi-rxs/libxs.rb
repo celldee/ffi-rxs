@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module XS
 
   # Wraps the libxs library and attaches to the API functions

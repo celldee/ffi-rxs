@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module XS
   # Set up all of the constants
   
