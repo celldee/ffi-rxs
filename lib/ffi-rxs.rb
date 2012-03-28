@@ -2,19 +2,17 @@
 
 module XS
 
-  # :stopdoc:
   LIBPATH = ::File.expand_path(::File.dirname(__FILE__)) + ::File::SEPARATOR
   PATH = ::File.dirname(LIBPATH) + ::File::SEPARATOR
-  # :startdoc:
 
   # Returns the version string for the library.
-  #
+  
   def self.version
     @version ||= File.read(path('version.txt')).strip
   end
 
   # Returns the library path for the module. If any arguments are given,
-  # they will be joined to the end of the libray path using
+  # they will be joined to the end of the library path using
   # <tt>File.join</tt>.
   #
   def self.libpath( *args, &block )
