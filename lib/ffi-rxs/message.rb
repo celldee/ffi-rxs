@@ -29,71 +29,76 @@ module XS
   # When you are done using a *received* message object, call #close to
   # release the associated buffers.
   #
-  #  received_message = Message.create
-  #  if received_message
-  #    rc = socket.recvmsg(received_message)
-  #    if XS::Util.resultcode_ok?(rc)
-  #      puts "Message contained: #{received_message.copy_out_string}"
-  #    else
-  #      STDERR.puts "Error when receiving message: #{XS::Util.error_string}"
-  #    end
+  # @example
+  #   received_message = Message.create
+  #   if received_message
+  #     rc = socket.recvmsg(received_message)
+  #     if XS::Util.resultcode_ok?(rc)
+  #       puts "Message contained: #{received_message.copy_out_string}"
+  #     else
+  #       STDERR.puts "Error when receiving message: #{XS::Util.error_string}"
+  #     end
   #
+  # @example Define a custom layout for the data sent between Crossroads peers
+  #   class MyMessage
+  #     class Layout < FFI::Struct
+  #       layout :value1, :uint8,
+  #              :value2, :uint64,
+  #              :value3, :uint32,
+  #              :value4, [:char, 30]
+  #     end
   #
-  # Define a custom layout for the data sent between Crossroads peers.
+  #     def initialize msg_struct = nil
+  #       if msg_struct
+  #         @msg_t = msg_struct
+  #         @data = Layout.new(@msg_t.data)
+  #       else
+  #         @pointer = FFI::MemoryPointer.new :byte, Layout.size, true
+  #         @data = Layout.new @pointer
+  #       end
+  #     end
   #
-  #  class MyMessage
-  #    class Layout < FFI::Struct
-  #      layout :value1, :uint8,
-  #             :value2, :uint64,
-  #             :value3, :uint32,
-  #             :value4, [:char, 30]
-  #    end
+  #     def size() @size = @msg_t.size; end
   #
-  #    def initialize msg_struct = nil
-  #      if msg_struct
-  #        @msg_t = msg_struct
-  #        @data = Layout.new(@msg_t.data)
-  #      else
-  #        @pointer = FFI::MemoryPointer.new :byte, Layout.size, true
-  #        @data = Layout.new @pointer
-  #      end
-  #    end
+  #     def value1
+  #       @data[:value1]
+  #     end
   #
-  #    def size() @size = @msg_t.size; end
+  #     def value4
+  #       @data[:value4].to_ptr.read_string
+  #     end
   #
-  #    def value1
-  #      @data[:value1]
-  #    end
+  #     def value1=(val)
+  #       @data[:value1] = val
+  #     end
   #
-  #    def value4
-  #      @data[:value4].to_ptr.read_string
-  #    end
+  #     def create_sendable_message
+  #       msg = Message.new
+  #       msg.copy_in_bytes @pointer, Layout.size
+  #     end
+  #   end
   #
-  #    def value1=(val)
-  #      @data[:value1] = val
-  #    end
-  #
-  #    def create_sendable_message
-  #      msg = Message.new
-  #      msg.copy_in_bytes @pointer, Layout.size
-  #    end
-  #
-  #
-  #  message = Message.new
-  #  successful_read = socket.recv message
-  #  message = MyMessage.new message if successful_read
-  #  puts "value1 is #{message.value1}"
+  #   message = Message.new
+  #   successful_read = socket.recv message
+  #   message = MyMessage.new message if successful_read
+  #   puts "value1 is #{message.value1}"
   #
   class Message
     include XS::Util
     
-    # Recommended way to create a standard message. A Message object is 
-    # returned upon success, nil when allocation fails.
+    # Recommended way to create a standard message.
     #
+    # @param message (optional)
+    # 
+    # @return [Message] upon success
+    # @return nil when allocation fails
     def self.create message = nil
       new(message) rescue nil
     end
 
+    # Initialize object
+    #
+    # @param message (optional)
     def initialize message = nil
       # allocate our own pointer so that we can tell it to *not* zero out
       # the memory; it's pointless work since the library is going to
@@ -115,6 +120,7 @@ module XS
     #
     # Can only be initialized via #copy_in_string or #copy_in_bytes once.
     #
+    # @param string
     def copy_in_string string
       string_size = string.respond_to?(:bytesize) ? string.bytesize : string.size
       copy_in_bytes string, string_size if string
@@ -125,6 +131,8 @@ module XS
     #
     # Can only be initialized via #copy_in_string or #copy_in_bytes once.
     #
+    # @param bytes
+    # @param length
     def copy_in_bytes bytes, len
       data_buffer = LibC.malloc len
       # writes the exact number of bytes, no null byte to terminate string
@@ -139,22 +147,26 @@ module XS
     # Provides the memory address of the +xs_msg_t+ struct. Used mostly for
     # passing to other methods accessing the underlying library that
     # require a real data address.
-    #
     def address
       @pointer
     end
     alias :pointer :address
 
+    # Copy content of message to another message
+    #
+    # @param source
     def copy source
       LibXS.xs_msg_copy @pointer, source
     end
 
+    # Move content of message to another message
+    #
+    # @param source
     def move source
       LibXS.xs_msg_move @pointer, source
     end
 
     # Provides the size of the data buffer for this +xs_msg_t+ C struct.
-    #
     def size
       LibXS.xs_msg_size @pointer
     end
@@ -164,6 +176,7 @@ module XS
     # when the +message+ object goes out of scope and gets garbage
     # collected.
     #
+    # @return pointer
     def data
       LibXS.xs_msg_data @pointer
     end
@@ -172,6 +185,7 @@ module XS
     #
     # Note: If this is binary data, it won't print very prettily.
     #
+    # @return string
     def copy_out_string
       data.read_string(size)
     end
@@ -182,6 +196,8 @@ module XS
     # Only releases the buffer a single time. Subsequent calls are
     # no ops.
     #
+    # @return 0 if successful
+    # @return -1 if unsuccessful
     def close
       rc = 0
       
@@ -197,6 +213,7 @@ module XS
     # each new instance
     @msg_size = LibXS::Msg.size
     
+    # Store the message size
     def self.msg_size() @msg_size; end
 
   end # class Message
@@ -232,6 +249,11 @@ module XS
     # Makes a copy of +len+ bytes from the ruby string +bytes+. Library
     # handles deallocation of the native memory buffer.
     #
+    # @param bytes
+    # @param length
+    #
+    # @return 0 if successful
+    # @return -1 if unsuccessful
     def copy_in_bytes bytes, len
       rc = super(bytes, len)
       
@@ -244,6 +266,8 @@ module XS
     # Manually release the message struct and its associated data
     # buffer.
     #
+    # @return 0 if successful
+    # @return -1 if unsuccessful
     def close
       rc = super()
       remove_finalizer
@@ -253,10 +277,12 @@ module XS
 
     private
 
+    # Deletes native resources after object has been destroyed
     def define_finalizer
       ObjectSpace.define_finalizer(self, self.class.close(@pointer))
     end
 
+    # Removes all finalizers for object
     def remove_finalizer
       ObjectSpace.undefine_finalizer self
     end
@@ -266,6 +292,8 @@ module XS
     # This is intentional. Since this code runs as a finalizer, there is no
     # way to catch a raised exception anywhere near where the error actually
     # occurred in the code, so we just ignore deallocation failures here.
+    #
+    # @param pointer
     def self.close ptr
       Proc.new do
         # release the data buffer

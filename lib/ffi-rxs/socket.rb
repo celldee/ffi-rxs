@@ -9,47 +9,49 @@ module XS
 
     # Allocates a socket of type +type+ for sending and receiving data.
     #
-    # +type+ can be one of XS::REQ, XS::REP, XS::PUB,
-    # XS::SUB, XS::PAIR, XS::PULL, XS::PUSH, XS::XREQ, XS::REP,
-    # XS::DEALER or XS::ROUTER.
-    #
     # By default, this class uses XS::Message for manual
     # memory management. For automatic garbage collection of received messages,
     # it is possible to override the :receiver_class to use XS::ManagedMessage.
     #
-    # sock = Socket.create(Context.create, XS::REQ, :receiver_class => XS::ManagedMessage)
+    # @example Socket creation
+    #   sock = Socket.create(Context.create, XS::REQ, :receiver_class => XS::ManagedMessage)
     #
     # Advanced users may want to replace the receiver class with their
     # own custom class. The custom class must conform to the same public API
     # as XS::Message.
     #
-    # Creation of a new Socket object can return nil when socket creation
-    # fails.
+    # 
+    # @example
+    #   if (socket = Socket.new(context.pointer, XS::REQ))
+    #     ...
+    #   else
+    #     STDERR.puts "Socket creation failed"
+    #   end
     #
-    # if (socket = Socket.new(context.pointer, XS::REQ))
-    #   ...
-    # else
-    #   STDERR.puts "Socket creation failed"
-    # end
+    # @param pointer
+    # @param [Constant] type
+    #   One of @XS::REQ@, @XS::REP@, @XS::PUB@, @XS::SUB@, @XS::PAIR@,
+    #          @XS::PULL@, @XS::PUSH@, @XS::XREQ@, @XS::REP@,
+    #          @XS::DEALER@ or @XS::ROUTER@
+    # @param [Hash] options
     #
+    # @return [Socket] when successful
+    # @return nil when unsuccessful
     def self.create context_ptr, type, opts = {:receiver_class => XS::Message}
       new(context_ptr, type, opts) rescue nil
     end
 
-    # To avoid rescuing exceptions, use the factory method #create for
-    # all socket creation.
-    #
     # Allocates a socket of type +type+ for sending and receiving data.
     #
-    # +type+ can be one of XS::REQ, XS::REP, XS::PUB,
-    # XS::SUB, XS::PAIR, XS::PULL, XS::PUSH, XS::XREQ, XS::REP,
-    # XS::DEALER or XS::ROUTER.
+    # To avoid rescuing exceptions, use the factory method #create for
+    # all socket creation.
     #
     # By default, this class uses XS::Message for manual
     # memory management. For automatic garbage collection of received messages,
     # it is possible to override the :receiver_class to use XS::ManagedMessage.
     #
-    # sock = Socket.new(Context.new, XS::REQ, :receiver_class => XS::ManagedMessage)
+    # @example Socket creation
+    #   sock = Socket.new(Context.new, XS::REQ, :receiver_class => XS::ManagedMessage)
     #
     # Advanced users may want to replace the receiver class with their
     # own custom class. The custom class must conform to the same public API
@@ -59,12 +61,22 @@ module XS
     # +context_ptr+ is null or when the allocation of the Crossroads socket within the
     # context fails.
     #
-    #  begin
-    #    socket = Socket.new(context.pointer, XS::REQ)
-    #  rescue ContextError => e
-    #    # error handling
-    #  end
+    # @example
+    #   begin
+    #     socket = Socket.new(context.pointer, XS::REQ)
+    #   rescue ContextError => e
+    #     # error handling
+    #   end
     #
+    # @param pointer
+    # @param [Constant] type
+    #   One of @XS::REQ@, @XS::REP@, @XS::PUB@, @XS::SUB@, @XS::PAIR@,
+    #          @XS::PULL@, @XS::PUSH@, @XS::XREQ@, @XS::REP@,
+    #          @XS::DEALER@ or @XS::ROUTER@
+    # @param [Hash] options
+    #
+    # @return [Socket] when successful
+    # @return nil when unsuccessful
     def initialize context_ptr, type, opts = {:receiver_class => XS::Message}
       # users may override the classes used for receiving; class must conform to the
       # same public API as XS::Message
@@ -91,38 +103,27 @@ module XS
       define_finalizer
     end
 
-    # Set the queue options on this socket.
+    # Set the queue options on this socket
     #
-    # Valid +name+ values that take a numeric +value+ are:
-    #  XS::HWM
-    #  XS::AFFINITY
-    #  XS::RATE
-    #  XS::RECOVERY_IVL
-    #  XS::LINGER
-    #  XS::RECONNECT_IVL
-    #  XS::BACKLOG
-    #  XS::RECONNECT_IVL_MAX
-    #  XS::MAXMSGSIZE
-    #  XS::SNDHWM
-    #  XS::RCVHWM
-    #  XS::MULTICAST_HOPS
-    #  XS::RCVTIMEO
-    #  XS::SNDTIMEO
+    # @param [Constant] name numeric values
+    #   One of @XS::HWM@, @XS::AFFINITY@, @XS::RATE@, @XS::RECOVERY_IVL@,
+    #          @XS::LINGER@, @XS::RECONNECT_IVL@, @XS::BACKLOG@,
+    #          @XS::RECONNECT_IVL_MAX@, @XS::MAXMSGSIZE@, @XS::SNDHWM@,
+    #          @XS::RCVHWM@, @XS::MULTICAST_HOPS@, @XS::RCVTIMEO@,
+    #          @XS::SNDTIMEO@
+    # @param [Constant] name string values
+    #   One of @XS::IDENTITY@, @XS::SUBSCRIBE@ or @XS::UNSUBSCRIBE@
+    # @param value
     #
-    # Valid +name+ values that take a string +value+ are:
-    #  XS::IDENTITY
-    #  XS::SUBSCRIBE
-    #  XS::UNSUBSCRIBE
-    #
-    # Returns 0 when the operation completed successfully.
-    # Returns -1 when this operation failed.
+    # @return 0 when the operation completed successfully
+    # @return -1 when this operation fails
     #
     # With a -1 return code, the user must check XS.errno to determine the
     # cause.
     #
-    #  rc = socket.setsockopt(XS::LINGER, 1_000)
-    #  XS::Util.resultcode_ok?(rc) ? puts("succeeded") : puts("failed")
-    #
+    # @example
+    #   rc = socket.setsockopt(XS::LINGER, 1_000)
+    #   XS::Util.resultcode_ok?(rc) ? puts("succeeded") : puts("failed")
     def setsockopt name, value, length = nil
       if 1 == @option_lookup[name]
         length = 8
@@ -154,18 +155,21 @@ module XS
     # Warning: if the call to #getsockopt fails, this method will return
     # false and swallow the error.
     #
-    #  message_parts = []
-    #  message = Message.new
-    #  rc = socket.recvmsg(message)
-    #  if XS::Util.resultcode_ok?(rc)
-    #    message_parts << message
-    #    while more_parts?
-    #      message = Message.new
-    #      rc = socket.recvmsg(message)
-    #      message_parts.push(message) if resulcode_ok?(rc)
-    #    end
-    #  end
+    # @example
+    #   message_parts = []
+    #   message = Message.new
+    #   rc = socket.recvmsg(message)
+    #   if XS::Util.resultcode_ok?(rc)
+    #     message_parts << message
+    #     while more_parts?
+    #       message = Message.new
+    #       rc = socket.recvmsg(message)
+    #       message_parts.push(message) if resultcode_ok?(rc)
+    #     end
+    #   end
     #
+    # @return true if more message parts
+    # @return false if not
     def more_parts?
       rc = getsockopt XS::RCVMORE, @more_parts_array
 
@@ -174,16 +178,23 @@ module XS
 
     # Binds the socket to an +address+.
     #
-    #  socket.bind("tcp://127.0.0.1:5555")
+    # @example
+    #   socket.bind("tcp://127.0.0.1:5555")
     #
+    # @param address
     def bind address
       LibXS.xs_bind @socket, address
     end
 
     # Connects the socket to an +address+.
     #
-    #  rc = socket.connect("tcp://127.0.0.1:5555")
+    # @example
+    #   rc = socket.connect("tcp://127.0.0.1:5555")
     #
+    # @param address
+    #
+    # @return 0 if successful
+    # @return -1 if unsuccessful
     def connect address
       rc = LibXS.xs_connect @socket, address
     end
@@ -191,12 +202,12 @@ module XS
     # Closes the socket. Any unprocessed messages in queue are sent or dropped
     # depending upon the value of the socket option XS::LINGER.
     #
-    # Returns 0 upon success *or* when the socket has already been closed.
-    # Returns -1 when the operation fails. Check XS.errno for the error code.
+    # @example
+    #   rc = socket.close
+    #   puts("Given socket was invalid!") unless 0 == rc
     #
-    #  rc = socket.close
-    #  puts("Given socket was invalid!") unless 0 == rc
-    #
+    # @return 0 upon success *or* when the socket has already been closed
+    # @return -1 when the operation fails. Check XS.errno for the error code
     def close
       if @socket
         remove_finalizer
@@ -212,151 +223,155 @@ module XS
     # Queues the message for transmission. Message is assumed to conform to the
     # same public API as #Message.
     #
-    # +flags+ may take two values:
-    # * 0 (default) - blocking operation
-    # * XS::NonBlocking - non-blocking operation
-    # * XS::SNDMORE - this message is part of a multi-part message
+    # @param message
+    # @param flag
+    #   One of @0 (default) - blocking operation@, @XS::NonBlocking - non-blocking operation@,
+    #          @XS::SNDMORE - this message is part of a multi-part message@
     #
-    # Returns 0 when the message was successfully enqueued.
-    # Returns -1 under two conditions.
-    # 1. The message could not be enqueued
-    # 2. When +flags+ is set with XS::NonBlocking and the socket returned EAGAIN.
+    # @return 0 when the message was successfully enqueued
+    # @return -1 under two conditions
+    #   1. The message could not be enqueued
+    #   2. When +flag+ is set with XS::NonBlocking and the socket returned EAGAIN.
     #
     # With a -1 return code, the user must check XS.errno to determine the
     # cause.
-    #
-    def sendmsg message, flags = 0
-      __sendmsg__(@socket, message.address, flags)
+    def sendmsg message, flag = 0
+      __sendmsg__(@socket, message.address, flag)
     end
 
     # Helper method to make a new #Message instance out of the +string+ passed
     # in for transmission.
     #
-    # +flags+ may be XS::NonBlocking and XS::SNDMORE.
+    # @param message
+    # @param flag
+    #   One of @0 (default)@, @XS::NonBlocking@ and @XS::SNDMORE@
     #
-    # Returns 0 when the message was successfully enqueued.
-    # Returns -1 under two conditions.
-    # 1. The message could not be enqueued
-    # 2. When +flags+ is set with XS::NonBlocking and the socket returned EAGAIN.
+    # @return 0 when the message was successfully enqueued
+    # @return -1 under two conditions
+    #   1. The message could not be enqueued
+    #   2. When +flag+ is set with XS::NonBlocking and the socket returned EAGAIN.
     #
     # With a -1 return code, the user must check XS.errno to determine the
     # cause.
-    #
-    def send_string string, flags = 0
+    def send_string string, flag = 0
       message = Message.new string
-      send_and_close message, flags
+      send_and_close message, flag
     end
 
     # Send a sequence of strings as a multipart message out of the +parts+
     # passed in for transmission. Every element of +parts+ should be
     # a String.
     #
-    # +flags+ may be XS::NonBlocking.
+    # @param [Array] parts
+    # @param flag
+    #   One of @0 (default)@ and @XS::NonBlocking@
     #
-    # Returns 0 when the messages were successfully enqueued.
-    # Returns -1 under two conditions.
-    # 1. A message could not be enqueued
-    # 2. When +flags+ is set with XS::NonBlocking and the socket returned EAGAIN.
+    # @return 0 when the messages were successfully enqueued
+    # @return -1 under two conditions
+    #   1. A message could not be enqueued
+    #   2. When +flag+ is set with XS::NonBlocking and the socket returned EAGAIN.
     #
     # With a -1 return code, the user must check XS.errno to determine the
     # cause.
-    #
-    def send_strings parts, flags = 0
+    def send_strings parts, flag = 0
       return -1 if !parts || parts.empty?
-      flags = NonBlocking if dontwait?(flags)
+      flag = NonBlocking if dontwait?(flag)
 
       parts[0..-2].each do |part|
-        rc = send_string part, (flags | XS::SNDMORE)
+        rc = send_string part, (flag | XS::SNDMORE)
         return rc unless Util.resultcode_ok?(rc)
       end
 
-      send_string parts[-1], flags
+      send_string parts[-1], flag
     end
 
     # Send a sequence of messages as a multipart message out of the +parts+
     # passed in for transmission. Every element of +parts+ should be
     # a Message (or subclass).
     #
-    # +flags+ may be XS::NonBlocking.
+    # @param [Array] parts
+    # @param flag
+    #   One of @0 (default)@ and @XS::NonBlocking@
     #
-    # Returns 0 when the messages were successfully enqueued.
-    # Returns -1 under two conditions.
-    # 1. A message could not be enqueued
-    # 2. When +flags+ is set with XS::NonBlocking and the socket returned EAGAIN.
+    # @return 0 when the messages were successfully enqueued
+    # @return -1 under two conditions
+    #   1. A message could not be enqueued
+    #   2. When +flag+ is set with XS::NonBlocking and the socket returned EAGAIN
     #
     # With a -1 return code, the user must check XS.errno to determine the
     # cause.
-    #
-    def sendmsgs parts, flags = 0
+    def sendmsgs parts, flag = 0
       return -1 if !parts || parts.empty?
-      flags = NonBlocking if dontwait?(flags)
+      flag = NonBlocking if dontwait?(flag)
 
       parts[0..-2].each do |part|
-        rc = sendmsg part, (flags | XS::SNDMORE)
+        rc = sendmsg part, (flag | XS::SNDMORE)
         return rc unless Util.resultcode_ok?(rc)
       end
 
-      sendmsg parts[-1], flags
+      sendmsg parts[-1], flag
     end
 
     # Sends a message. This will automatically close the +message+ for both successful
     # and failed sends.
     #
-    # Returns 0 when the message was successfully enqueued.
-    # Returns -1 under two conditions.
-    # 1. The message could not be enqueued
-    # 2. When +flags+ is set with XS::NonBlocking and the socket returned EAGAIN.
+    # @param message
+    # @param flag
+    #   One of @0 (default)@ and @XS::NonBlocking
+    #
+    # @return 0 when the message was successfully enqueued
+    # @return -1 under two conditions
+    #   1. The message could not be enqueued
+    #   2. When +flag+ is set with XS::NonBlocking and the socket returned EAGAIN.
     #
     # With a -1 return code, the user must check XS.errno to determine the
     # cause.
-    #
-    def send_and_close message, flags = 0
-      rc = sendmsg message, flags
+    def send_and_close message, flag = 0
+      rc = sendmsg message, flag
       message.close
       rc
     end
 
     # Dequeues a message from the underlying queue. By default, this is a blocking operation.
     #
-    # +flags+ may take two values:
-    #  0 (default) - blocking operation
-    #  XS::NonBlocking - non-blocking operation
+    # @param message
+    # @param flag
+    #   One of @0 (default) - blocking operation@ and @XS::NonBlocking - non-blocking operation@
     #
-    # Returns 0 when the message was successfully dequeued.
-    # Returns -1 under two conditions.
-    # 1. The message could not be dequeued
-    # 2. When +flags+ is set with XS::NonBlocking and the socket returned EAGAIN.
+    # @return 0 when the message was successfully dequeued
+    # @return -1 under two conditions
+    #   1. The message could not be dequeued
+    #   2. When +flags+ is set with XS::NonBlocking and the socket returned EAGAIN
     #
     # With a -1 return code, the user must check XS.errno to determine the
     # cause.
     #
     # The application code is responsible for handling the +message+ object lifecycle
     # when #recv returns an error code.
-    #
-    def recvmsg message, flags = 0
-      #LibXS.xs_recvmsg @socket, message.address, flags
-      __recvmsg__(@socket, message.address, flags)
+    def recvmsg message, flag = 0
+      __recvmsg__(@socket, message.address, flag)
     end
 
     # Helper method to make a new #Message instance and convert its payload
     # to a string.
     #
-    # +flags+ may be XS::NonBlocking.
+    # @param string
+    # @param flag
+    #   One of @0 (default)@ and @XS::NonBlocking@
     #
-    # Returns 0 when the message was successfully dequeued.
-    # Returns -1 under two conditions.
-    # 1. The message could not be dequeued
-    # 2. When +flags+ is set with XS::NonBlocking and the socket returned EAGAIN.
+    # @return 0 when the message was successfully dequeued
+    # @return -1 under two conditions
+    #   1. The message could not be dequeued
+    #   2. When +flag+ is set with XS::NonBlocking and the socket returned EAGAIN
     #
     # With a -1 return code, the user must check XS.errno to determine the
     # cause.
     #
     # The application code is responsible for handling the +message+ object lifecycle
     # when #recv returns an error code.
-    #
-    def recv_string string, flags = 0
+    def recv_string string, flag = 0
       message = @receiver_klass.new
-      rc = recvmsg message, flags
+      rc = recvmsg message, flag
       string.replace(message.copy_out_string) if Util.resultcode_ok?(rc)
       message.close
       rc
@@ -364,9 +379,13 @@ module XS
 
     # Receive a multipart message as a list of strings.
     #
-    # +flag+ may be XS::NonBlocking. Any other flag will be
-    # removed.
+    # @param [Array] list
+    # @param flag
+    #   One of @0 (default)@ and @XS::NonBlocking@. Any other flag will be
+    #   removed.
     #
+    # @return 0 if successful
+    # @return -1 if unsuccessful
     def recv_strings list, flag = 0
       array = []
       rc = recvmsgs array, flag
@@ -384,9 +403,13 @@ module XS
     # Receive a multipart message as an array of objects
     # (by default these are instances of Message).
     #
-    # +flag+ may be XS::NonBlocking. Any other flag will be
-    # removed.
+    # @param [Array] list
+    # @param flag
+    #   One of @0 (default)@ and @XS::NonBlocking@. Any other flag will be
+    #   removed.
     #
+    # @return 0 if successful
+    # @return -1 if unsuccessful
     def recvmsgs list, flag = 0
       flag = NonBlocking if dontwait?(flag)
 
@@ -422,6 +445,13 @@ module XS
     # a +list+ for receiving the message body parts and a +routing_envelope+
     # for receiving the message parts comprising the 0mq routing information.
     #
+    # @param [Array] list
+    # @param routing_envelope
+    # @param flag
+    #   One of @0 (default)@ and @XS::NonBlocking@
+    #
+    # @return 0 if successful
+    # @return -1 if unsuccessful
     def recv_multipart list, routing_envelope, flag = 0
       parts = []
       rc = recvmsgs parts, flag
@@ -444,6 +474,12 @@ module XS
 
     private
 
+    # Gets socket option
+    #
+    # @param name
+    # @param array
+    #
+    # @return option number
     def __getsockopt__ name, array
       # a small optimization so we only have to determine the option
       # type a single time; gives approx 5% speedup to do it this way.
@@ -469,6 +505,9 @@ module XS
     # Calls to xs_getsockopt require us to pass in some pointers. We can cache and save those buffers
     # for subsequent calls. This is a big perf win for calling RCVMORE which happens quite often.
     # Cannot save the buffer for the IDENTITY.
+    #
+    # @param option_type
+    # @return cached number or string
     def sockopt_buffers option_type
       if 1 == option_type
         # int64_t or uint64_t
@@ -508,6 +547,7 @@ module XS
       end
     end
 
+    # Populate socket option lookup array
     def populate_option_lookup
       # integer options
       [EVENTS, LINGER, RECONNECT_IVL, FD, TYPE, BACKLOG].each { |option| @option_lookup[option] = 0 }
@@ -519,13 +559,20 @@ module XS
       [SUBSCRIBE, UNSUBSCRIBE].each { |option| @option_lookup[option] = 2 }
     end
 
+    # Initialize caches
     def release_cache
       @longlong_cache = nil
       @int_cache = nil
     end
 
-    def dontwait?(flags)
-      (NonBlocking & flags) == NonBlocking
+    # Convenience method to decide whether flag is DONTWAIT
+    #
+    # @param flag
+    #
+    # @return true if is DONTWAIT
+    # @return false if not
+    def dontwait?(flag)
+      (NonBlocking & flag) == NonBlocking
     end
     alias :noblock? :dontwait?
   end # module CommonSocketBehavior
@@ -535,6 +582,7 @@ module XS
 
     # Convenience method for getting the value of the socket IDENTITY.
     #
+    # @return identity
     def identity
       array = []
       getsockopt IDENTITY, array
@@ -543,6 +591,7 @@ module XS
 
     # Convenience method for setting the value of the socket IDENTITY.
     #
+    # @param value
     def identity=(value)
       setsockopt IDENTITY, value.to_s
     end
@@ -550,6 +599,7 @@ module XS
 
     private
 
+    # Populate option lookup array
     def populate_option_lookup
       super()
 
@@ -565,39 +615,27 @@ module XS
 
     # Get the options set on this socket.
     #
-    # +name+ determines the socket option to request
-    # +array+ should be an empty array; a result of the proper type
-    # (numeric, string, boolean) will be inserted into
-    # the first position.
+    # @param name
+    #   One of @XS::RCVMORE@, @XS::SNDHWM@, @XS::AFFINITY@, @XS::IDENTITY@,
+    #          @XS::RATE@, @XS::RECOVERY_IVL@, @XS::SNDBUF@,
+    #          @XS::RCVBUF@, @XS::FD@, @XS::EVENTS@, @XS::LINGER@,
+    #          @XS::RECONNECT_IVL@, @XS::BACKLOG@, XS::RECONNECT_IVL_MAX@,
+    #          @XS::RCVTIMEO@, @XS::SNDTIMEO@, @XS::IPV4ONLY@, @XS::TYPE@,
+    #          @XS::RCVHWM@, @XS::MAXMSGSIZE@, @XS::MULTICAST_HOPS@
+    # @param array should be an empty array; a result of the proper type
+    #   (numeric, string, boolean) will be inserted into
+    #   the first position.
     #
-    # Valid +option_name+ values:
-    #  XS::RCVMORE - true or false
-    #  XS::HWM - integer
-    #  XS::SWAP - integer
-    #  XS::AFFINITY - bitmap in an integer
-    #  XS::IDENTITY - string
-    #  XS::RATE - integer
-    #  XS::RECOVERY_IVL - integer
-    #  XS::SNDBUF - integer
-    #  XS::RCVBUF - integer
-    #  XS::FD     - fd in an integer
-    #  XS::EVENTS - bitmap integer
-    #  XS::LINGER - integer measured in milliseconds
-    #  XS::RECONNECT_IVL - integer measured in milliseconds
-    #  XS::BACKLOG - integer
-    #  XS::RECOVER_IVL_MSEC - integer measured in milliseconds
-    #
-    # Returns 0 when the operation completed successfully.
-    # Returns -1 when this operation failed.
+    # @return 0 when the operation completed successfully
+    # @return -1 when this operation failed
     #
     # With a -1 return code, the user must check XS.errno to determine the
     # cause.
     #
-    #  # retrieve high water mark
-    #  array = []
-    #  rc = socket.getsockopt(XS::HWM, array)
-    #  hwm = array.first if XS::Util.resultcode_ok?(rc)
-    #
+    #  @example Retrieve send high water mark
+    #    array = []
+    #    rc = socket.getsockopt(XS::SNDHWM, array)
+    #    sndhwm = array.first if XS::Util.resultcode_ok?(rc)
     def getsockopt name, array
       rc = __getsockopt__ name, array
 
@@ -612,14 +650,30 @@ module XS
 
     private
 
-    def __sendmsg__(socket, address, flags)
-      LibXS.xs_sendmsg(socket, address, flags)
+    # Queue message to send
+    #
+    # @param socket
+    # @param address
+    # @param flag
+    def __sendmsg__(socket, address, flag)
+      LibXS.xs_sendmsg(socket, address, flag)
     end
 
-    def __recvmsg__(socket, address, flags)
-      LibXS.xs_recvmsg(socket, address, flags)
+    # Receive message
+    #
+    # @param socket
+    # @param address
+    # @param flag
+    def __recvmsg__(socket, address, flag)
+      LibXS.xs_recvmsg(socket, address, flag)
     end
 
+    # Convenience method to decide if option is integer
+    #
+    # @param name
+    #
+    # @return true if integer
+    # @return false if not
     def int_option? name
       super(name) ||
       RECONNECT_IVL_MAX == name ||
@@ -631,6 +685,7 @@ module XS
       RCVBUF            == name
     end
 
+    # Populate socket option lookup array
     def populate_option_lookup
       super()
 
@@ -640,15 +695,18 @@ module XS
 
     # these finalizer-related methods cannot live in the CommonSocketBehavior
     # module; they *must* be in the class definition directly
-
+    #
+    # Deletes native resources after object has been destroyed
     def define_finalizer
       ObjectSpace.define_finalizer(self, self.class.close(@socket))
     end
 
+    # Removes all finalizers for object
     def remove_finalizer
       ObjectSpace.undefine_finalizer self
     end
 
+    # Closes the socket
     def self.close socket
       Proc.new { LibXS.xs_close socket }
     end

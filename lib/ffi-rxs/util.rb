@@ -7,7 +7,8 @@ module XS
   #
   module Util
 
-    # Returns true when +rc+ is greater than or equal to 0, false otherwise.
+    # @return true when +rc+ is greater than or equal to 0
+    # @return false otherwise
     #
     # We use the >= test because xs_poll() returns the number of sockets
     # that had a read or write event triggered. So, a >= 0 result means
@@ -17,21 +18,21 @@ module XS
       rc >= 0
     end
 
-    # Returns the +errno+ as set by the libxs library.
+    # @return errno as set by the libxs library.
     #
     def self.errno
       LibXS.xs_errno
     end
 
-    # Returns a string corresponding to the currently set #errno. These
+    # @return string corresponding to the currently set #errno. These
     # error strings are defined by libxs.
     #
     def self.error_string
       LibXS.xs_strerror(errno).read_string
     end
 
-    # Returns an array of the form [major, minor, patch] to represent the
-    # version of libxs.
+    # @return array of the form [major, minor, patch] to represent the
+    # version of libxs
     #
     # Class method! Invoke as:  XS::Util.version
     #
@@ -67,12 +68,11 @@ module XS
       rand(55534) + 10_000
     end
 
-    # :doc:
     # Called by most library methods to verify there were no errors during
     # operation. If any are found, raise the appropriate #XSError.
     #
-    # When no error is found, this method returns +true+ which is behavior
-    # used internally by #send and #recv.
+    # @return true when no error is found which is behavior used internally
+    # by #send and #recv.
     #
     def error_check source, result_code
       if -1 == result_code
