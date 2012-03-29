@@ -1,9 +1,10 @@
 = Version 1.0.1
 
   * Re-working of some ZeroMQ examples for use with Crossroads I/O
-  * Addition of missing socket option constant XS::IPV4ONLY
+  * Addition of missing socket option XS::IPV4ONLY
+  * Addition of new socket option XS::KEEPALIVE
   * Editing of inline comments for Yard documentation in Textile
-  * Amended .gemspec to exclude ext/libxs.so from build to accommodate Travis CI
+  * Amended .gemspec to exclude ext/libxs.so from build to accommodate Travis CI in development
 
 = Version 1.0.0
 
