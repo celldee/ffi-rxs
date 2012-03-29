@@ -1,6 +1,7 @@
 # encoding: utf-8
 
-#   Task ventilator in Ruby
+#   Task vent to be used in conjunction with task_worker.rb
+#   and task_sink.rb
 #   Binds PUSH socket to tcp://localhost:5557
 #   Sends batch of tasks to task_workers via that socket
 

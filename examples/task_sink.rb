@@ -1,6 +1,7 @@
 # encoding: utf-8
 
-# Task sink
+# Task sink to be used in conjunction with task_vent.rb
+# and task_worker.rb
 # Binds PULL socket to tcp://localhost:5558
 # Collects results from task_workers via that socket
 

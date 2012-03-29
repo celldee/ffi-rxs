@@ -1,6 +1,7 @@
 # encoding: utf-8
 
-#   Task worker in Ruby
+#   Task worker to be used in conjunction with task_vent.rb
+#   and task_sink.rb
 #   Connects PULL socket to tcp://localhost:5557
 #   Collects workloads from task_vent via that socket
 #   Connects PUSH socket to tcp://localhost:5558
