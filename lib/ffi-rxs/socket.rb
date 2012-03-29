@@ -635,10 +635,10 @@ module XS
     # With a -1 return code, the user must check XS.errno to determine the
     # cause.
     #
-    #  @example Retrieve send high water mark
-    #    array = []
-    #    rc = socket.getsockopt(XS::SNDHWM, array)
-    #    sndhwm = array.first if XS::Util.resultcode_ok?(rc)
+    # @example Retrieve send high water mark
+    #   array = []
+    #   rc = socket.getsockopt(XS::SNDHWM, array)
+    #   sndhwm = array.first if XS::Util.resultcode_ok?(rc)
     def getsockopt name, array
       rc = __getsockopt__ name, array
 

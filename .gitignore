@@ -3,6 +3,7 @@
 .yardoc/*
 Gemfile.lock
 pkg/*
+doc/*
 
 *.rbc
 .redcar/
