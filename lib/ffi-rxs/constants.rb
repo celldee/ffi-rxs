@@ -62,6 +62,7 @@ module XS
   RCVTIMEO = 27
   SNDTIMEO = 28
   IPV4ONLY = 31
+  KEEPALIVE = 32
   
   # Message options
   MORE = 1
