@@ -106,11 +106,13 @@ module XS
     # Set the queue options on this socket
     #
     # @param [Constant] name numeric values
-    #   One of @XS::HWM@, @XS::AFFINITY@, @XS::RATE@, @XS::RECOVERY_IVL@,
+    #   One of @XS::AFFINITY@, @XS::RATE@, @XS::RECOVERY_IVL@,
     #          @XS::LINGER@, @XS::RECONNECT_IVL@, @XS::BACKLOG@,
     #          @XS::RECONNECT_IVL_MAX@, @XS::MAXMSGSIZE@, @XS::SNDHWM@,
     #          @XS::RCVHWM@, @XS::MULTICAST_HOPS@, @XS::RCVTIMEO@,
-    #          @XS::SNDTIMEO@
+    #          @XS::SNDTIMEO@, @XS::IPV4ONLY@, @XS::KEEPALIVE@,
+    #          @XS::SUBSCRIBE@, @XS::UNSUBSCRIBE@, @XS::IDENTITY@,
+    #          @XS::SNDBUF@, @XS::RCVBUF@
     # @param [Constant] name string values
     #   One of @XS::IDENTITY@, @XS::SUBSCRIBE@ or @XS::UNSUBSCRIBE@
     # @param value
@@ -621,7 +623,8 @@ module XS
     #          @XS::RCVBUF@, @XS::FD@, @XS::EVENTS@, @XS::LINGER@,
     #          @XS::RECONNECT_IVL@, @XS::BACKLOG@, XS::RECONNECT_IVL_MAX@,
     #          @XS::RCVTIMEO@, @XS::SNDTIMEO@, @XS::IPV4ONLY@, @XS::TYPE@,
-    #          @XS::RCVHWM@, @XS::MAXMSGSIZE@, @XS::MULTICAST_HOPS@
+    #          @XS::RCVHWM@, @XS::MAXMSGSIZE@, @XS::MULTICAST_HOPS@,
+    #          @XS::KEEPALIVE@
     # @param array should be an empty array; a result of the proper type
     #   (numeric, string, boolean) will be inserted into
     #   the first position.

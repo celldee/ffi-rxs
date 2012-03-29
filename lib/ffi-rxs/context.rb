@@ -75,7 +75,7 @@ module XS
     # @example Set io_threads context option
     #   rc = context.setctxopt(XS::IO_THREADS, 10)
     #   unless XS::Util.resultcode_ok?(rc)
-    #     raise XS::ContextError.new('xs_setctxopt', rc, XS::Util.errno, XS::Util.error_string)
+    #     XS::raise_error('xs_setctxopt', rc)
     #   end
     def setctxopt name, value
       length = 4
