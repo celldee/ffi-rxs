@@ -44,8 +44,6 @@ h3. Using Request (REQ) socket -
 <pre>
 require 'ffi-rxs'
 
-msg_in = ''
-
 ctx = XS::Context.create()
 socket = ctx.socket(XS::REQ)
 socket.connect("tcp://127.0.0.1:5000")
@@ -54,7 +52,7 @@ for i in 1..10
   msg = "msg #{i.to_s}"
   socket.send_string(msg)
   puts "Sending: " + msg
-  socket.recv_string(msg_in)
+  socket.recv_string(msg_in = '')
   puts "Received: " + msg_in
 end
 </pre>
@@ -64,14 +62,12 @@ h3. Using Reply (REP) socket -
 <pre>
 require 'ffi-rxs'
 
-msg = ''
-
 ctx = XS::Context.create()
 socket = ctx.socket(XS::REP)
 socket.bind("tcp://127.0.0.1:5000")
  
 while true do
-  socket.recv_string(msg)
+  socket.recv_string(msg = '')
   puts "Got: " + msg
   socket.send_string(msg)
 end
