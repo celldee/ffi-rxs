@@ -671,23 +671,6 @@ module XS
       LibXS.xs_recvmsg(socket, address, flag)
     end
 
-    # Convenience method to decide if option is integer
-    #
-    # @param name
-    #
-    # @return true if integer
-    # @return false if not
-    def int_option? name
-      super(name) ||
-      RECONNECT_IVL_MAX == name ||
-      RCVHWM            == name ||
-      SNDHWM            == name ||
-      RATE              == name ||
-      RECOVERY_IVL      == name ||
-      SNDBUF            == name ||
-      RCVBUF            == name
-    end
-
     # Populate socket option lookup array
     def populate_option_lookup
       super()
