@@ -1,7 +1,8 @@
+# encoding: utf-8
+
 # Execute 'rake spec' from the main directory to run all specs.
 
-require File.expand_path(
-File.join(File.dirname(__FILE__), %w[.. lib ffi-rxs]))
+require File.expand_path(File.join(File.dirname(__FILE__), %w[.. lib ffi-rxs]))
 
 Thread.abort_on_exception = true
 
