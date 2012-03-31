@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Chris Duncan"]
   s.email       = ["celldee@gmail.com"]
   s.homepage    = "http://github.com/celldee/ffi-rxs"
-  s.summary     = %q{Ruby FFI bindings for Crossroads I/O networking library.}
-  s.description = %q{Ruby FFI bindings for Crossroads I/O networking library.}
+  s.summary     = %q{Ruby FFI bindings for Crossroads I/O messaging library.}
+  s.description = %q{Ruby FFI bindings for Crossroads I/O messaging library.}
 
   s.files         = `git ls-files`.split("\n")
   s.files         = s.files.reject{ |f| f.include?('ext/libxs.so') }

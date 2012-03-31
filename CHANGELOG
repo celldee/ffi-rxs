@@ -1,3 +1,8 @@
+= Version 1.1.1
+
+  * Add UTF-8 encoding string to spec files
+  * Amend description to refer to Crossroads I/O as a messaging library
+  
 = Version 1.1.0
 
   * Version number bumped to reflect addition of new features in v1.0.1
