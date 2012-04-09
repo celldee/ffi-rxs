@@ -1,8 +1,8 @@
 h1. About ffi-rxs
 
-This gem wraps the "Crossroads I/O":http://crossroads.io messaging library using the Ruby FFI (foreign function interface). It's a pure Ruby wrapper so this gem can be loaded and run by any Ruby runtime that supports FFI. That's all of them: MRI 1.9.x, Rubinius and JRuby.
+This gem wraps the "Crossroads I/O":http://crossroads.io messaging library (libxs) using the Ruby FFI (foreign function interface). It's a pure Ruby wrapper so this gem can be loaded and run by any Ruby runtime that supports FFI. That's all of them: MRI 1.9.x, Rubinius and JRuby.
 
-Crossroads I/O is a fork of ZeroMQ. This gem is a re-working of the "ffi-rzmq":http://github.com/chuckremes/ffi-rzmq gem created by Chuck Remes to provide bindings for the Crossroads I/O libxs library instead of the ZeroMQ libzmq library. 
+Crossroads I/O is a fork of ZeroMQ. This gem is a re-working of the "ffi-rzmq":http://github.com/chuckremes/ffi-rzmq gem created by Chuck Remes to provide bindings for the libxs library instead of the ZeroMQ libzmq library. 
 
 h2. Features/Problems
 
@@ -15,12 +15,14 @@ h2. Requirements
 * Crossroads I/O version 1.0.0 or later.
 * ffi (>= 1.0.0)
   
-The Crossroads I/O library must be installed on your system in a well-known location like '/usr/local/lib'.
+The libxs library must be installed on your system in a well-known location like '/usr/local/lib'.
 
 Do *not* run this gem under MRI with an old 'ffi' gem. It will not work as expected.
 
 *NOTE*
-If you want to build a gem using a version of the Crossroads library other than your current system version, then you can include the library in the 'ext' directory. *Do not forget* to change the .gemspec file so that it does not exclude the library from the gem build.
+The master GitHub repository contains a copy of the libxs library in the 'ext' directory. This is so that the "Travis CI":http://travis-ci.org continuous integration build platform can be used. The .gemspec file excludes the 'ext' directory from the gem build.
+
+If you want to build a gem using a version of libxs other than your current system version, then you can include the library in the 'ext' directory. *Do not forget* to change the .gemspec file so that it does not exclude the library from the gem build.
   
 h2. Installation
 
