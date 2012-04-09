@@ -15,7 +15,7 @@ ctx = XS::Context.create()
 socket = ctx.socket(XS::REQ)
 socket.connect("tcp://127.0.0.1:5000")
  
-for i in 1..10
+(1..10).each do |i|
   msg = "msg #{i.to_s}"
   socket.send_string(msg)
   puts "Sending: " + msg
