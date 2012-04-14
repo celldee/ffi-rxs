@@ -63,6 +63,19 @@ module XS
       resultcode_ok?(rc) ? random : nil
     end
 
+    # Called by most library methods to verify there were no errors during
+    # operation. If any are found, raise the appropriate #XSError.
+    #
+    # @return true when no error is found which is behavior used internally
+    #   by #send and #recv.
+    def self.error_check source, result_code
+      if -1 == result_code
+        raise_error source, result_code
+      end
+
+      # used by Socket::send/recv, ignored by others
+      true
+    end
 
     private
 
@@ -72,26 +85,12 @@ module XS
     def self.random_port
       rand(55534) + 10_000
     end
-
-    # Called by most library methods to verify there were no errors during
-    # operation. If any are found, raise the appropriate #XSError.
-    #
-    # @return true when no error is found which is behavior used internally
-    #   by #send and #recv.
-    def error_check source, result_code
-      if -1 == result_code
-        raise_error source, result_code
-      end
-
-      # used by Socket::send/recv, ignored by others
-      true
-    end
-
+    
     # Raises error
     #
     # @param source
     # @param result_code
-    def raise_error source, result_code
+    def self.raise_error source, result_code
       if 'xs_init' == source || 'xs_socket' == source
         raise ContextError.new source, result_code, XS::Util.errno, XS::Util.error_string
 

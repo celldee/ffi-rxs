@@ -43,7 +43,7 @@ module XS
       @sockets = []
       @context = LibXS.xs_init()
       @pointer = @context
-      error_check 'xs_init', (@context.nil? || @context.null?) ? -1 : 0
+      XS::Util.error_check 'xs_init', (@context.nil? || @context.null?) ? -1 : 0
 
       define_finalizer
     end
