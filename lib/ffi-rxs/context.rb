@@ -29,7 +29,6 @@ module XS
   #     STDERR.puts "Context allocation failed"
   #   end
   class Context
-    include XS::Util
 
     attr_reader :context, :pointer
 

@@ -84,7 +84,6 @@ module XS
   #   puts "value1 is #{message.value1}"
   #
   class Message
-    include XS::Util
     
     # Recommended way to create a standard message.
     #

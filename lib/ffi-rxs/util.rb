@@ -1,10 +1,9 @@
 # encoding: utf-8
 
 module XS
-
-  # These methods don't belong to any specific class. They get included
-  # in the #Context, #Socket and #Poller classes.
-  module Util
+  
+  # Provides general utility methods
+  class Util
 
     # @return true when +rc+ is greater than or equal to 0
     # @return false otherwise

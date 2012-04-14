@@ -3,7 +3,6 @@
 module XS
 
   module CommonSocketBehavior
-    include XS::Util
 
     attr_reader :socket, :name
 

@@ -3,7 +3,6 @@
 module XS
 
   class Poller
-    include XS::Util
 
     attr_reader :readables, :writables
 
