@@ -103,7 +103,7 @@ module XS
       end
     end
 
-    def eagain?
+    def self.eagain?
       EAGAIN == XS::Util.errno
     end
 
