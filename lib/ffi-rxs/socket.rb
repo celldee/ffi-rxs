@@ -197,7 +197,7 @@ module XS
     # @return 0 if successful
     # @return -1 if unsuccessful
     def connect address
-      rc = LibXS.xs_connect @socket, address
+      LibXS.xs_connect @socket, address
     end
 
     # Closes the socket. Any unprocessed messages in queue are sent or dropped
