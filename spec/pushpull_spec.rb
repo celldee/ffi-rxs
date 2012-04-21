@@ -62,7 +62,7 @@ module XS
             pull = @context.socket XS::PULL
             rc = pull.setsockopt XS::LINGER, 0
             rc = pull.connect @link
-            rc.should == 0
+            rc.should_not be < 0
             buffer = ''
             rc = pull.recv_string buffer
             rc.should == 11
@@ -87,7 +87,7 @@ module XS
         pull = @context.socket XS::PULL
         rc = pull.setsockopt XS::LINGER, 0
         rc = pull.connect @link
-        rc.should == 0
+        rc.should_not be < 0
         mutex = Mutex.new
 
         count.times do |i|
