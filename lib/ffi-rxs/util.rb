@@ -62,13 +62,13 @@ module XS
       resultcode_ok?(rc) ? random : nil
     end
 
-    # Called by most library methods to verify there were no errors during
-    # operation. If any are found, raise the appropriate #XSError.
+    # Called to verify there were no errors during operation. If any are found,
+    # raise the appropriate XSError.
     #
     # @return true when no error is found which is behavior used internally
     #   by #send and #recv.
     def self.error_check source, result_code
-      if -1 == result_code
+      if result_code < 0
         raise_error source, result_code
       end
 
@@ -90,16 +90,13 @@ module XS
     # @param source
     # @param result_code
     def self.raise_error source, result_code
-      if 'xs_init' == source || 'xs_socket' == source
+      case source
+      when 'xs_init', 'xs_socket'
         raise ContextError.new source, result_code, XS::Util.errno, XS::Util.error_string
-
-      elsif ['xs_msg_init', 'xs_msg_init_data', 'xs_msg_copy', 'xs_msg_move'].include?(source)
+      when 'xs_msg_init', 'xs_msg_init_data', 'xs_msg_copy', 'xs_msg_move'
         raise MessageError.new source, result_code, XS::Util.errno, XS::Util.error_string
-
       else
-        puts "else"
-        raise XSError.new source, result_code, -1,
-        "Source [#{source}] does not match any xs_* strings, rc [#{result_code}], errno [#{XS::Util.errno}], error_string [#{XS::Util.error_string}]"
+        raise XSError.new source, result_code, XS::Util.errno, XS::Util.error_string
       end
     end
 

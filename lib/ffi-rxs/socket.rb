@@ -183,6 +183,9 @@ module XS
     #   socket.bind("tcp://127.0.0.1:5555")
     #
     # @param address
+    #
+    # @return 0 or greater if successful
+    # @return < 0 if unsuccessful
     def bind address
       LibXS.xs_bind @socket, address
     end
@@ -194,8 +197,8 @@ module XS
     #
     # @param address
     #
-    # @return 0 if successful
-    # @return -1 if unsuccessful
+    # @return 0 or greater if successful
+    # @return < 0 if unsuccessful
     def connect address
       LibXS.xs_connect @socket, address
     end
