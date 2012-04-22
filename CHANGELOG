@@ -1,7 +1,10 @@
-= Version 1.1.1
+= Version 1.2.0
 
   * Add UTF-8 encoding string to spec files
   * Amend description to refer to Crossroads I/O as a messaging library
+  * XS::Util is now a singleton class
+  * Util.error_check method is now public
+  * Handle return codes from xs_connect and xs_bind that are > 0 or < -1
   
 = Version 1.1.0
 
