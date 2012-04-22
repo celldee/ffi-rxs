@@ -59,11 +59,10 @@ module XS
     context "when setting context options" do
       include APIHelper
       
-      it "gets EINVAL when option name is not recognized" do
+      it "should return unsuccessful code when option name is not recognized" do
         ctx = Context.new
         rc = ctx.setctxopt(XS::IDENTITY, 10)
         Util.resultcode_ok?(rc).should be_false
-        XS::Util.errno.should == XS::EINVAL
       end
     end
     
@@ -74,14 +73,12 @@ module XS
         ctx = Context.new
         rc = ctx.setctxopt(XS::IO_THREADS, 0)
         Util.resultcode_ok?(rc).should be_false
-        XS::Util.errno.should == XS::EINVAL
       end
       
       it "should return unsuccessful code for negative io threads" do
         ctx = Context.new
         rc = ctx.setctxopt(XS::IO_THREADS, -1)
         Util.resultcode_ok?(rc).should be_false
-        XS::Util.errno.should == XS::EINVAL
       end
       
       it "should return successful code for positive io threads" do
@@ -105,7 +102,6 @@ module XS
         ctx = Context.new
         rc = ctx.setctxopt(XS::MAX_SOCKETS, -1)
         Util.resultcode_ok?(rc).should be_false
-        XS::Util.errno.should == XS::EINVAL
       end
       
       it "should return successful code for positive max sockets" do
