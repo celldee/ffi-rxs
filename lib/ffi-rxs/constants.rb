@@ -19,6 +19,11 @@ module XS
   PUSH = 8
   XPUB = 9
   XSUB = 10
+  SURVEYOR = 11
+  RESPONDENT = 12
+  XSURVEYOR = 13
+  XRESPONDENT = 14
+  
   DEALER = XREQ
   ROUTER = XREP
 
@@ -63,6 +68,8 @@ module XS
   SNDTIMEO = 28
   IPV4ONLY = 31
   KEEPALIVE = 32
+  PROTOCOL = 33
+  SURVEY_TIMEOUT = 34
   
   # Message options
   MORE = 1
