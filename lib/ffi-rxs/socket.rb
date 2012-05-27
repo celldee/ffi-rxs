@@ -335,6 +335,19 @@ module XS
       message.close
       rc
     end
+    
+    # Unbinds/disconnects the socket from an endpoint.
+    #
+    # @example
+    #   socket.shutdown(endpoint_id)
+    #
+    # @param endpoint_id (endpoint id returned from socket.bind/socket.connect)
+    #
+    # @return 0 if successful
+    # @return -1 if unsuccessful
+    def shutdown endpoint_id
+      LibXS.xs_shutdown @socket, endpoint_id
+    end
 
     # Dequeues a message from the underlying queue. By default, this is a blocking operation.
     #
