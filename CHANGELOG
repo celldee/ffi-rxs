@@ -1,5 +1,7 @@
 = Version 1.2.0
 
+  * Add new surveyor socket types
+  * Add new xs_shutdown function
   * Add UTF-8 encoding string to spec files
   * Amend description to refer to Crossroads I/O as a messaging library
   * XS::Util is now a singleton class
