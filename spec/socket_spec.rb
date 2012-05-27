@@ -570,15 +570,19 @@ module XS
         
         it "unbinds #{XS::SocketTypeNameMap[socket_type]} socket" do
           rc = @socket.bind("tcp://127.0.0.1:5555")
+          sleep 0.2
           rc.should be > -1
           rc = @socket.shutdown(rc)
+          sleep 0.2
           rc.should == 0
         end
         
         it "disconnects #{XS::SocketTypeNameMap[socket_type]} socket" do
           rc = @socket.connect("tcp://127.0.0.1:5555")
+          sleep 0.2
           rc.should be > -1
           rc = @socket.shutdown(rc)
+          sleep 0.2
           rc.should == 0
         end
     
