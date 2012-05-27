@@ -40,7 +40,11 @@ module XS
     ROUTER => "ROUTER",
     DEALER => "DEALER",
     XPUB => "XPUB",
-    XSUB => "XSUB"
+    XSUB => "XSUB",
+    SURVEYOR => "SURVEYOR",
+    RESPONDENT => "RESPONDENT",
+    XSURVEYOR => "XSURVEYOR",
+    XRESPONDENT => "XRESPONDENT"
   }
 
   # Socket options
