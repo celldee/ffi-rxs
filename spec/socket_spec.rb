@@ -571,14 +571,14 @@ module XS
         it "unbinds #{XS::SocketTypeNameMap[socket_type]} socket" do
           rc = @socket.bind("tcp://127.0.0.1:5555")
           rc.should be > -1
-          rc = LibXS::xs_shutdown(@socket.socket, rc)
+          rc = @socket.shutdown(rc)
           rc.should == 0
         end
         
         it "disconnects #{XS::SocketTypeNameMap[socket_type]} socket" do
           rc = @socket.connect("tcp://127.0.0.1:5555")
           rc.should be > -1
-          rc = LibXS::xs_shutdown(@socket.socket, rc)
+          rc = @socket.shutdown(rc)
           rc.should == 0
         end
     
