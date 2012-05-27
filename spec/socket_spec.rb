@@ -4,10 +4,9 @@ require File.join(File.dirname(__FILE__), %w[spec_helper])
 
 module XS
 
-
   describe Socket do
 
-    socket_types = [XS::REQ, XS::REP, XS::DEALER, XS::ROUTER, XS::PUB, XS::SUB, XS::PUSH, XS::PULL, XS::PAIR, XS::XPUB, XS::XSUB]
+    socket_types = [XS::REQ, XS::REP, XS::DEALER, XS::ROUTER, XS::PUB, XS::SUB, XS::PUSH, XS::PULL, XS::PAIR, XS::XPUB, XS::XSUB, XS::SURVEYOR, XS::XSURVEYOR, XS::RESPONDENT, XS::XRESPONDENT]
 
     context "when initializing" do
       before(:all) { @ctx = Context.new }
@@ -419,7 +418,7 @@ module XS
           socket.close
         end
 
-        if RUBY_PLATFORM =~ /linux|darwin/
+        if RUBY_PLATFORM =~ /linux|darwin|java/
           # this spec doesn't work on Windows; hints welcome
 
           context "using option XS::FD" do
@@ -468,12 +467,14 @@ module XS
 
         end # posix platform
 
-        context "using option XS::EVENTS" do
-          it "should return a mask of events as a Fixnum" do
-            array = []
-            rc = socket.getsockopt(XS::EVENTS, array)
-            rc.should == 0
-            array[0].should be_a(Fixnum)
+        unless XS::SocketTypeNameMap[socket_type] == 'SURVEYOR' # Feature not implemented yet
+          context "using option XS::EVENTS" do
+            it "should return a mask of events as a Fixnum" do
+              array = []
+              rc = socket.getsockopt(XS::EVENTS, array)
+              rc.should == 0
+              array[0].should be_a(Fixnum)
+            end
           end
         end
 
@@ -553,6 +554,37 @@ module XS
       end
 
     end # describe 'events mapping to pollin and pollout'
+    
+    socket_types.each do |socket_type|
+    
+      context "calling shutdown" do
+        before(:each) do
+          @ctx = Context.new
+          @socket = @ctx.socket socket_type
+        end
+
+        after(:each) do
+          @socket.close
+          @ctx.terminate
+        end
+        
+        it "unbinds #{XS::SocketTypeNameMap[socket_type]} socket" do
+          rc = @socket.bind("tcp://127.0.0.1:5555")
+          rc.should be > -1
+          rc = LibXS::xs_shutdown(@socket.socket, rc)
+          rc.should == 0
+        end
+        
+        it "disconnects #{XS::SocketTypeNameMap[socket_type]} socket" do
+          rc = @socket.connect("tcp://127.0.0.1:5555")
+          rc.should be > -1
+          rc = LibXS::xs_shutdown(@socket.socket, rc)
+          rc.should == 0
+        end
+    
+      end # context calling shutdown
+      
+    end
 
   end # describe Socket
 
