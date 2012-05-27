@@ -45,6 +45,8 @@ module XS
     @blocking = true
     attach_function :xs_setctxopt, [:pointer, :int, :pointer, :int], :int
     @blocking = true
+    attach_function :xs_shutdown, [:pointer, :int], :int
+    @blocking = true
     attach_function :xs_socket, [:pointer, :int], :pointer
     @blocking = true
     attach_function :xs_strerror, [:int], :pointer
