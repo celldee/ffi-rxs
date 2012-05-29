@@ -567,7 +567,7 @@ module XS
     # Populate socket option lookup array
     def populate_option_lookup
       # integer options
-      [EVENTS, LINGER, RECONNECT_IVL, FD, TYPE, BACKLOG, KEEPALIVE, IPV4ONLY].each { |option| @option_lookup[option] = 0 }
+      [EVENTS, LINGER, RECONNECT_IVL, FD, TYPE, BACKLOG, KEEPALIVE, IPV4ONLY, SURVEY_TIMEOUT].each { |option| @option_lookup[option] = 0 }
 
       # long long options
       [RCVMORE, AFFINITY].each { |option| @option_lookup[option] = 1 }
