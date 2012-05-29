@@ -23,12 +23,6 @@ module XS
         Util.resultcode_ok?(rc).should be_false
       end
 
-      it "gets EAGAIN or ENOENT when there are no messages to read" do
-        array = []
-        rc = @receiver.recvmsgs(array, XS::NonBlocking)
-        XS::Util.errno.should == (XS::EAGAIN || XS::ENOENT)
-      end
-
       it "returns the given array unmodified when there are no messages to read" do
         array = []
         rc = @receiver.recvmsgs(array, XS::NonBlocking)
