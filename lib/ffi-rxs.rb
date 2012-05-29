@@ -58,8 +58,7 @@ end  # module XS
 
 # Conditional code execution depending upon which ruby engine we are
 # using
-#RBX = defined?(RUBY_ENGINE) && RUBY_ENGINE =~ /rbx/ ? true : false
-RBX = false
+RBX = defined?(RUBY_ENGINE) && RUBY_ENGINE =~ /rbx/ ? true : false
 
 require 'ffi' unless RBX
 
