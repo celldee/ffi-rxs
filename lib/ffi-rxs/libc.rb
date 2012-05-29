@@ -1,11 +1,9 @@
 # encoding: utf-8
 
-require 'ffi'
-
 module LibC
-  extend FFI::Library
+  extend ::FFI::Library
   # figures out the correct libc for each platform including Windows
-  library = ffi_lib(FFI::Library::LIBC).first
+  library = ffi_lib(::FFI::Library::LIBC).first
 
   # Size_t not working properly on Windows
   find_type(:size_t) rescue typedef(:ulong, :size_t)
