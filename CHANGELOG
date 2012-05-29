@@ -1,3 +1,7 @@
+= Version 1.2.1
+
+  * Add SURVEY_TIMEOUT type definition
+  
 = Version 1.2.0
 
   * Add new surveyor socket types
