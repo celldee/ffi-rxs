@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-class LibC
+module LibC
   extend FFI::Library
   # figures out the correct libc for each platform including Windows
   library = ffi_lib(FFI::Library::LIBC).first
