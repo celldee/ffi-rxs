@@ -6,6 +6,5 @@ rvm:
   - jruby-19mode
   - rbx-18mode
   - rbx-19mode
-before_install: echo 'yes' | gem uninstall ffi -a -I || true
 notifications:
   email: false
